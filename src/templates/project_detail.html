@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container page-project-detail">
+    <div class="page-header">
+        <div>
+            <h1>{{ project.title }}</h1>
+            <p class="text-muted">
+                {{ project.study_design | replace('_', ' ') | title }} |
+                {{ project.exposure_var }} → {{ project.outcome_var }} |
+                {{ project.cycles | join(', ') }}
+            </p>
+        </div>
+        <div class="header-actions">
+            <a href="/dashboard" class="btn btn-outline">返回项目列表</a>
+            {% if project.status == 'completed' %}
+            <a href="/api/download/{{ project.id }}" class="btn btn-primary">下载结果</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <!-- 项目信息 -->
+        <div class="detail-card">
+            <h3>研究配置</h3>
+            <table class="info-table">
+                <tr><td>研究设计</td><td>{{ project.study_design | replace('_', ' ') | title }}</td></tr>
+                <tr><td>分析类型</td><td>{{ project.analysis_type }}</td></tr>
+                <tr><td>暴露变量</td><td><code>{{ project.exposure_var }}</code></td></tr>
+                <tr><td>结局变量</td><td><code>{{ project.outcome_var }}</code></td></tr>
+                <tr><td>协变量</td><td>{{ project.covariates | join(', ') }}</td></tr>
+                <tr><td>调查周期</td><td>{{ project.cycles | join(', ') }}</td></tr>
+                <tr><td>年龄范围</td><td>{{ project.age_min }} - {{ project.age_max }} 岁</td></tr>
+                {% if project.subgroup_var %}
+                <tr><td>亚组变量</td><td><code>{{ project.subgroup_var }}</code></td></tr>
+                {% endif %}
+                <tr><td>创建时间</td><td>{{ project.created_at }}</td></tr>
+            </table>
+        </div>
+
+        <!-- 分析状态 -->
+        <div class="detail-card">
+            <h3>分析状态</h3>
+            {% if task.status %}
+            <div class="status-section">
+                <div class="status-badge status-{{ task.status }}">{{ task.status }}</div>
+                {% if task.status == 'analyzing' %}
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ task.progress }}%"></div>
+                </div>
+                <p class="text-muted">{{ task.current_step }} ({{ task.progress }}%)</p>
+                {% elif task.status == 'completed' %}
+                <div class="results-summary">
+                    <div class="result-item">
+                        <span class="result-label">样本量</span>
+                        <span class="result-value">{{ task.sample_size }}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">生成表格</span>
+                        <span class="result-value">{{ task.tables_count }}个</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">生成图形</span>
+                        <span class="result-value">{{ task.figures_count }}个</span>
+                    </div>
+                </div>
+                {% elif task.status == 'failed' %}
+                <p class="text-error">{{ task.message }}</p>
+                {% endif %}
+            </div>
+            {% else %}
+            <p class="text-muted">尚未启动分析</p>
+            {% endif %}
+
+            {% if project.status == 'created' or project.status == 'failed' %}
+            <button id="startAnalysis" class="btn btn-primary" onclick="startAnalysis('{{ project.id }}')">
+                启动分析
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 论文预览 -->
+    {% if task.status == 'completed' %}
+    <div class="detail-card full-width">
+        <h3>论文预览</h3>
+        <div class="paper-tabs">
+            <button class="tab-btn active" onclick="loadSection('abstract')">摘要</button>
+            <button class="tab-btn" onclick="loadSection('introduction')">引言</button>
+            <button class="tab-btn" onclick="loadSection('methods')">方法</button>
+            <button class="tab-btn" onclick="loadSection('results')">结果</button>
+            <button class="tab-btn" onclick="loadSection('discussion')">讨论</button>
+            <button class="tab-btn" onclick="loadSection('references')">参考文献</button>
+        </div>
+        <div id="paperContent" class="paper-content">
+            <p class="text-muted">选择一个章节查看</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+async function startAnalysis(projectId) {
+    const btn = document.getElementById('startAnalysis');
+    btn.disabled = true;
+    btn.textContent = '正在启动...';
+
+    try {
+        const resp = await fetch(`/api/analyze/${projectId}`, { method: 'POST' });
+        if (!resp.ok) {
+            const err = await resp.json();
+            alert('启动失败: ' + (err.detail || '未知错误'));
+            btn.disabled = false;
+            btn.textContent = '启动分析';
+            return;
+        }
+
+        // 轮询状态
+        pollStatus(projectId);
+    } catch (err) {
+        alert('网络错误: ' + err.message);
+        btn.disabled = false;
+        btn.textContent = '启动分析';
+    }
+}
+
+function pollStatus(projectId) {
+    const interval = setInterval(async () => {
+        try {
+            const resp = await fetch(`/api/analyze/${projectId}/status`);
+            const data = await resp.json();
+
+            if (data.status === 'completed' || data.status === 'failed') {
+                clearInterval(interval);
+                window.location.reload();
+            }
+        } catch (err) {
+            console.error('轮询错误:', err);
+        }
+    }, 3000);
+}
+
+async function loadSection(section) {
+    const projectId = '{{ project.id }}';
+    try {
+        const resp = await fetch(`/api/paper/${projectId}?section=${section}`);
+        if (!resp.ok) {
+            document.getElementById('paperContent').innerHTML = '<p class="text-error">无法加载章节</p>';
+            return;
+        }
+        const data = await resp.json();
+        document.getElementById('paperContent').innerHTML = `<pre>${data.content}</pre>`;
+
+        // 更新active tab
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+    } catch (err) {
+        document.getElementById('paperContent').innerHTML = '<p class="text-error">加载失败</p>';
+    }
+}
+</script>
+{% endblock %}

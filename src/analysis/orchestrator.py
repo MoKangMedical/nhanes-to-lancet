@@ -21,9 +21,9 @@ from datetime import datetime
 import pandas as pd
 
 # 项目内部导入
-from ..nhanes import NHANESDownloader, NHANESDataProcessor, NHANES_VARIABLES
-from ..analysis import RScriptGenerator, AnalysisConfig, generate_analysis_script
-from ..paper import LancetPaperGenerator, PaperConfig, generate_paper
+from src.nhanes import NHANESDownloader, NHANESDataProcessor, NHANES_VARIABLES
+from src.analysis.r_scripts import RScriptGenerator, AnalysisConfig
+from src.paper import LancetPaperGenerator, PaperConfig, generate_paper
 
 logger = logging.getLogger(__name__)
 

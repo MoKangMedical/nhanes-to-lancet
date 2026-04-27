@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container page-new-project">
+    <div class="page-header">
+        <div>
+            <h1>新建分析项目</h1>
+            <p class="text-muted">配置研究参数，自动执行NHANES数据分析</p>
+        </div>
+    </div>
+
+    <form id="projectForm" class="project-form">
+        <div class="form-section">
+            <h3>研究基本信息</h3>
+            <div class="form-group">
+                <label for="title">研究标题 *</label>
+                <input type="text" id="title" name="title" required
+                       placeholder="例: BMI与2型糖尿病的关联: NHANES 2017-2018横断面研究">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="study_design">研究设计</label>
+                    <select id="study_design" name="study_design">
+                        <option value="cross_sectional">横断面研究 (Cross-sectional)</option>
+                        <option value="cohort">队列研究 (Cohort)</option>
+                        <option value="case_control">病例对照研究 (Case-control)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="analysis_type">分析类型</label>
+                    <select id="analysis_type" name="analysis_type">
+                        <option value="logistic">Logistic回归 (二分类结局)</option>
+                        <option value="linear">线性回归 (连续结局)</option>
+                        <option value="cox">Cox回归 (生存分析)</option>
+                        <option value="kaplan_meier">Kaplan-Meier生存分析</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>研究变量</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="exposure_var">暴露变量 *</label>
+                    <input type="text" id="exposure_var" name="exposure_var" required
+                           placeholder="例: BMXBMI" list="var-list">
+                    <small>NHANES变量代码 (如 BMXBMI, BPXSY1, LBXTC)</small>
+                </div>
+                <div class="form-group">
+                    <label for="outcome_var">结局变量 *</label>
+                    <input type="text" id="outcome_var" name="outcome_var" required
+                           placeholder="例: DIQ010" list="var-list">
+                    <small>NHANES变量代码 (如 DIQ010, MCQ160F, BPQ020)</small>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="covariates">协变量</label>
+                <input type="text" id="covariates" name="covariates"
+                       placeholder="例: RIDAGEYR, RIAGENDR, RIDRETH1, DMDEDUC2, INDFMPIR">
+                <small>逗号分隔的NHANES变量代码。常用: RIDAGEYR(年龄), RIAGENDR(性别), RIDRETH1(种族), DMDEDUC2(教育), INDFMPIR(收入)</small>
+            </div>
+            <div class="form-group">
+                <label for="subgroup_var">亚组分析变量 (可选)</label>
+                <input type="text" id="subgroup_var" name="subgroup_var"
+                       placeholder="例: RIAGENDR" list="var-list">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>调查设置</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="cycles">调查周期</label>
+                    <select id="cycles" name="cycles">
+                        {% for cycle in cycles %}
+                        <option value="{{ cycle }}" {% if cycle == '2017-2018' %}selected{% endif %}>{{ cycle }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="age_min">最小年龄</label>
+                    <input type="number" id="age_min" name="age_min" value="20" min="0" max="120">
+                </div>
+                <div class="form-group">
+                    <label for="age_max">最大年龄</label>
+                    <input type="number" id="age_max" name="age_max" value="80" min="0" max="120">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-lg">创建并开始分析</button>
+            <a href="/dashboard" class="btn btn-outline btn-lg">取消</a>
+        </div>
+    </form>
+
+    <datalist id="var-list">
+        {% for var in common_vars %}
+        <option value="{{ var.name }}">{{ var.desc }} ({{ var.table }})</option>
+        {% endfor %}
+    </datalist>
+</div>
+
+<script>
+document.getElementById('projectForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const formData = {
+        title: document.getElementById('title').value,
+        study_design: document.getElementById('study_design').value,
+        analysis_type: document.getElementById('analysis_type').value,
+        exposure_var: document.getElementById('exposure_var').value.toUpperCase(),
+        outcome_var: document.getElementById('outcome_var').value.toUpperCase(),
+        covariates: document.getElementById('covariates').value.split(',').map(s => s.trim().toUpperCase()).filter(Boolean),
+        cycles: [document.getElementById('cycles').value],
+        subgroup_var: document.getElementById('subgroup_var').value.toUpperCase() || null,
+        age_min: parseInt(document.getElementById('age_min').value),
+        age_max: parseInt(document.getElementById('age_max').value),
+    };
+
+    try {
+        const resp = await fetch('/api/projects', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(formData)
+        });
+
+        if (!resp.ok) {
+            const err = await resp.json();
+            alert('创建失败: ' + (err.detail || '未知错误'));
+            return;
+        }
+
+        const data = await resp.json();
+        window.location.href = '/projects/' + data.id;
+    } catch (err) {
+        alert('网络错误: ' + err.message);
+    }
+});
+</script>
+{% endblock %}

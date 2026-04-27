@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <div class="hero-badge">NHANES数据分析平台</div>
+        <h1>从健康调查数据<br>到<span class="text-accent">顶级期刊</span></h1>
+        <p class="hero-desc">
+            AI驱动的NHANES数据分析流水线。上传研究方案，自动完成数据下载、
+            统计分析、图表生成和Lancet格式论文撰写。
+        </p>
+        <div class="hero-actions">
+            <a href="/projects/new" class="btn btn-primary btn-lg">开始新分析</a>
+            <a href="/dashboard" class="btn btn-outline btn-lg">查看项目</a>
+        </div>
+        <div class="hero-stats">
+            <div class="stat-item">
+                <div class="stat-number">1999-2020</div>
+                <div class="stat-label">NHANES调查周期</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">100,000+</div>
+                <div class="stat-label">参与者数据</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">2000+</div>
+                <div class="stat-label">可用变量</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ total_projects }}</div>
+                <div class="stat-label">已创建项目</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">平台能力</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#A51C30" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                </div>
+                <h3>智能研究方案解析</h3>
+                <p>上传Word格式研究方案，AI自动提取PICO/PECO要素，识别研究变量</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#A51C30" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    </svg>
+                </div>
+                <h3>NHANES数据自动下载</h3>
+                <p>从CDC官网自动下载XPT数据文件，支持多周期合并，智能处理调查权重</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#A51C30" stroke-width="2">
+                        <line x1="18" y1="20" x2="18" y2="10"/>
+                        <line x1="12" y1="20" x2="12" y2="4"/>
+                        <line x1="6" y1="20" x2="6" y2="14"/>
+                    </svg>
+                </div>
+                <h3>Survey加权统计分析</h3>
+                <p>完整的NHANES复杂抽样设计分析: 加权Logistic/Cox回归、生存分析、亚组分析</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#A51C30" stroke-width="2">
+                        <path d="M12 20h9"/>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                    </svg>
+                </div>
+                <h3>Lancet格式论文生成</h3>
+                <p>自动生成结构化摘要、引言、方法、结果、讨论，符合Lancet投稿标准</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="workflow">
+    <div class="container">
+        <h2 class="section-title">工作流程</h2>
+        <div class="workflow-steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h4>创建项目</h4>
+                <p>定义研究变量和分析类型</p>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h4>自动分析</h4>
+                <p>数据下载、统计分析、图表生成</p>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h4>生成论文</h4>
+                <p>AI撰写Lancet格式学术论文</p>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <h4>下载结果</h4>
+                <p>获取完整分析报告和论文</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="nhanes-intro">
+    <div class="container">
+        <h2 class="section-title">关于NHANES</h2>
+        <div class="nhanes-grid">
+            <div class="nhanes-info">
+                <p>NHANES (National Health and Nutrition Examination Survey) 是美国CDC开展的全国健康与营养调查，采用分层多阶段概率抽样设计，代表美国非机构化平民人口。</p>
+                <ul class="nhanes-list">
+                    <li>每2年一个调查周期</li>
+                    <li>包含访谈、体检和实验室检测</li>
+                    <li>涵盖人口学、体格测量、实验室检查、问卷调查等数据</li>
+                    <li>支持复杂抽样设计加权分析</li>
+                </ul>
+            </div>
+            <div class="nhanes-cycles">
+                <h4>可用调查周期</h4>
+                <div class="cycle-tags">
+                    <span class="cycle-tag">1999-2000</span>
+                    <span class="cycle-tag">2001-2002</span>
+                    <span class="cycle-tag">2003-2004</span>
+                    <span class="cycle-tag">2005-2006</span>
+                    <span class="cycle-tag">2007-2008</span>
+                    <span class="cycle-tag">2009-2010</span>
+                    <span class="cycle-tag">2011-2012</span>
+                    <span class="cycle-tag">2013-2014</span>
+                    <span class="cycle-tag">2015-2016</span>
+                    <span class="cycle-tag">2017-2018</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
