@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block title %}{{ project.title }} - NHANES to Lancet{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="mb-4">
+        <a href="/dashboard" class="text-muted"><i class="fas fa-arrow-left me-1"></i>Back to Dashboard</a>
+        <h2 class="mt-2">{{ project.title }}</h2>
+        <p class="text-muted">{{ project.description }}</p>
+    </div>
+    
+    <!-- Status Bar -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-bold">Analysis Progress</span>
+                <span id="statusBadge" class="badge {% if project.status == 'completed' %}bg-success{% elif project.status == 'running' %}bg-warning{% else %}bg-secondary{% endif %}">
+                    {{ project.status }}
+                </span>
+            </div>
+            <div class="progress mb-2">
+                <div id="progressBar" class="progress-bar" style="width: {{ project.progress }}%"></div>
+            </div>
+            <small class="text-muted">Project ID: {{ project_id }}</small>
+        </div>
+    </div>
+    
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#overview">Overview</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#results">Results</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#paper">Paper</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#figures">Figures</a>
+        </li>
+    </ul>
+    
+    <div class="tab-content">
+        <!-- Overview Tab -->
+        <div class="tab-pane fade show active" id="overview">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">Study Configuration</div>
+                        <div class="card-body">
+                            <table class="table table-sm mb-0">
+                                <tr><th>Exposure</th><td>{{ project.exposure or 'Not specified' }}</td></tr>
+                                <tr><th>Outcome</th><td>{{ project.outcome or 'Not specified' }}</td></tr>
+                                <tr><th>Analysis Type</th><td>{{ project.analysis_type }}</td></tr>
+                                <tr><th>Survey Cycles</th><td>{{ project.cycles|join(', ') }}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">Analysis Summary</div>
+                        <div class="card-body" id="analysisSummary">
+                            {% if project.results %}
+                                <p><strong>Participants Analyzed:</strong> {{ project.results.n_analyzed or 'N/A' }}</p>
+                                <p><strong>Variables Mapped:</strong> {{ project.results.mappings|length if project.results.mappings else 'N/A' }}</p>
+                                <p><strong>Status:</strong> {{ project.results.status }}</p>
+                            {% else %}
+                                <p class="text-muted">Analysis not yet started</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results Tab -->
+        <div class="tab-pane fade" id="results">
+            <div class="card">
+                <div class="card-header">Statistical Results</div>
+                <div class="card-body">
+                    {% if project.results and project.results.tables %}
+                        {% for name, content in project.results.tables.items() %}
+                        <div class="mb-4">
+                            <h5>{{ name.replace('_', ' ').title() }}</h5>
+                            <div class="border rounded p-3" style="white-space: pre-wrap; font-family: monospace; font-size: 0.85rem;">{{ content }}</div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Results will appear here after analysis completes.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Paper Tab -->
+        <div class="tab-pane fade" id="paper">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <span>Generated Paper</span>
+                    {% if project.results and project.results.paper %}
+                    <button class="btn btn-sm btn-outline-primary" onclick="copyPaper()">
+                        <i class="fas fa-copy me-1"></i>Copy
+                    </button>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if project.results and project.results.paper %}
+                    <div id="paperContent" style="white-space: pre-wrap; line-height: 1.8; font-size: 0.95rem;">{{ project.results.paper }}</div>
+                    {% else %}
+                    <p class="text-muted">Paper will be generated after analysis completes.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Figures Tab -->
+        <div class="tab-pane fade" id="figures">
+            <div class="card">
+                <div class="card-header">Publication Figures</div>
+                <div class="card-body">
+                    {% if project.results and project.results.figures %}
+                    <div class="row g-3">
+                        {% for name, path in project.results.figures.items() %}
+                        <div class="col-md-6">
+                            <div class="card">
+                                <img src="/static/figures/{{ path.split('/')[-1] }}" class="card-img-top" alt="{{ name }}">
+                                <div class="card-body">
+                                    <small class="text-muted">{{ name }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Figures will be generated after analysis completes.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Download -->
+    {% if project.results and project.results.zip_path %}
+    <div class="mt-4">
+        <a href="/api/projects/{{ project_id }}/download" class="btn btn-primary">
+            <i class="fas fa-download me-2"></i>Download All Results (ZIP)
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyPaper() {
+    const text = document.getElementById('paperContent').textContent;
+    navigator.clipboard.writeText(text);
+    alert('Paper copied to clipboard!');
+}
+
+{% if project.status == 'running' %}
+// Poll for status
+const pollInterval = setInterval(async () => {
+    try {
+        const resp = await fetch('/api/projects/{{ project_id }}/status');
+        const data = await resp.json();
+        document.getElementById('progressBar').style.width = data.progress + '%';
+        document.getElementById('statusBadge').textContent = data.status;
+        
+        if (data.status === 'completed' || data.status === 'failed') {
+            clearInterval(pollInterval);
+            location.reload();
+        }
+    } catch (e) {}
+}, 3000);
+{% endif %}
+</script>
+{% endblock %}

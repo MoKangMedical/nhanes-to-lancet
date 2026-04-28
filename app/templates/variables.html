@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}NHANES Variables - NHANES to Lancet{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4"><i class="fas fa-database me-2 text-danger"></i>NHANES Variable Browser</h2>
+    
+    <!-- Search -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" class="form-control" id="searchInput" 
+                       placeholder="Search variables (e.g., BMI, blood pressure, glucose, depression)...">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Results -->
+    <div id="searchResults" class="mb-4" style="display:none;">
+        <h5>Search Results</h5>
+        <div id="resultsList" class="list-group"></div>
+    </div>
+    
+    <!-- Category Browse -->
+    <h5 class="mb-3">Browse by Category</h5>
+    <div class="row g-3">
+        {% for cat in categories %}
+        <div class="col-md-4 col-6">
+            <button class="btn btn-outline-secondary w-100 text-start category-btn" data-category="{{ cat }}">
+                <i class="fas fa-folder me-2"></i>{{ cat }}
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Variable Details Modal -->
+    <div class="modal fade" id="varModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="varModalTitle">Variable Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="varModalBody"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let searchTimeout;
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+const resultsList = document.getElementById('resultsList');
+
+searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+        const q = searchInput.value.trim();
+        if (q.length < 2) { searchResults.style.display = 'none'; return; }
+        
+        try {
+            const resp = await fetch('/api/variables/search?q=' + encodeURIComponent(q));
+            const data = await resp.json();
+            
+            resultsList.innerHTML = data.map(v => 
+                '<a href="#" class="list-group-item list-group-item-action" onclick="showVarDetail(\'' + v.code + '\'); return false;">' +
+                '<div class="d-flex justify-content-between">' +
+                '<div><strong>' + v.code + '</strong> - ' + v.description + '</div>' +
+                '<span class="badge bg-secondary">' + v.category + '</span>' +
+                '</div></a>'
+            ).join('');
+            searchResults.style.display = 'block';
+        } catch (e) {}
+    }, 300);
+});
+
+async function showVarDetail(code) {
+    const resp = await fetch('/api/variables/' + code);
+    const data = await resp.json();
+    
+    document.getElementById('varModalTitle').textContent = code;
+    document.getElementById('varModalBody').innerHTML = 
+        '<table class="table"><tr><th>Description</th><td>' + data.desc + '</td></tr>' +
+        '<tr><th>Type</th><td>' + data.type + '</td></tr>' +
+        '<tr><th>Category</th><td>' + data.category + '</td></tr>' +
+        '<tr><th>File</th><td>' + data.file + '</td></tr>' +
+        (data.unit ? '<tr><th>Unit</th><td>' + data.unit + '</td></tr>' : '') +
+        (data.range ? '<tr><th>Range</th><td>' + data.range[0] + ' - ' + data.range[1] + '</td></tr>' : '') +
+        '</table>';
+    
+    new bootstrap.Modal(document.getElementById('varModal')).show();
+}
+</script>
+{% endblock %}

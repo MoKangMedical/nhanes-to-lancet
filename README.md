@@ -1,23 +1,70 @@
-# NHANES数据到柳叶刀
+# NHANES to Lancet
 
-AI驱动的NHANES数据分析 — 从健康调查数据到顶级期刊
+**AI-Driven Epidemiological Research Platform**  
+Transform NHANES data into Lancet-quality publication-ready research papers.
 
-## 项目目标
+## Features
 
-将美国NHANES（国家健康与营养调查）数据转化为柳叶刀级别发表的临床研究论文。
+- **Automated Data Pipeline**: Download NHANES data directly from CDC
+- **Survey-Weighted Analysis**: Proper complex survey design handling
+- **Lancet-Standard Output**: Publication-ready tables, figures, and papers
+- **AI-Powered**: Automatic variable mapping and paper generation
+- **10 Research Topics**: Cardiovascular, obesity, diabetes, depression, and more
 
-## 核心能力
+## Quick Start
 
-- NHANES数据自动下载与清洗
-- 加权统计分析（考虑复杂抽样设计）
-- 多变量回归+亚组分析
-- 论文/图表自动生成
+```bash
+# Install dependencies
+pip install -r requirements.txt
 
-## 快速开始
+# Run the server
+python run.py
 
-    git clone https://github.com/MoKangMedical/nhanes-to-lancet.git
-    cd nhanes-to-lancet
-    pip install -r requirements.txt
-    python src/main.py --topic "obesity and diabetes"
+# Open http://localhost:8501
+```
+
+## Supported Analyses
+
+| Analysis | Method | Output |
+|----------|--------|--------|
+| Cross-sectional | Weighted logistic/linear regression | OR/Beta with 95% CI |
+| Cohort | Cox proportional hazards | Hazard ratio |
+| Survival | Kaplan-Meier | Survival curves |
+| Competing Risk | Fine-Gray | Sub-hazard ratio |
+
+## NHANES Data Coverage
+
+- 10 survey cycles (1999-2000 to 2017-2020)
+- 2000+ variables across demographics, labs, questionnaires
+- Automatic survey weight adjustment for multi-cycle analyses
+
+## Output
+
+- **Table 1**: Baseline characteristics (Lancet format)
+- **Table 2**: Multivariable regression results
+- **Figure 1**: Forest plot (OR/HR with 95% CI)
+- **Figure 2**: Kaplan-Meier survival curves
+- **Paper**: Complete Lancet-format manuscript
+- **STROBE**: Reporting checklist
+
+## Architecture
+
+```
+app/
+├── data/          # NHANES data engine (download, process, variables)
+├── analysis/      # Statistical analysis (survey, survival, tables, figures)
+├── ai/            # AI tools (parser, mapper, writer)
+├── pipeline/      # End-to-end orchestration
+├── templates/     # Web UI (Jinja2 + Bootstrap 5)
+└── server.py      # FastAPI server
+```
+
+## License
 
 MIT License
+
+## Citation
+
+If you use this platform in your research, please cite:
+> NHANES to Lancet: AI-Driven Epidemiological Research Platform. 
+> https://github.com/MoKangMedical/nhanes-to-lancet

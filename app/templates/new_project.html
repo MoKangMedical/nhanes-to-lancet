@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}New Project - NHANES to Lancet{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h2 class="mb-4"><i class="fas fa-plus-circle me-2 text-danger"></i>Create New Analysis Project</h2>
+            
+            <div class="card">
+                <div class="card-body p-4">
+                    <form id="projectForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Project Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="title" required
+                                   placeholder="e.g., Association between BMI and hypertension in US adults">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Research Topic / Description</label>
+                            <textarea class="form-control" name="description" rows="2"
+                                      placeholder="Brief description of your research question"></textarea>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Exposure Variable</label>
+                                <input type="text" class="form-control" name="exposure" id="exposure"
+                                       placeholder="e.g., BMI, blood pressure, glucose">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Outcome Variable</label>
+                                <input type="text" class="form-control" name="outcome" id="outcome"
+                                       placeholder="e.g., diabetes, mortality, CVD">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Quick Phenotype Selection</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for p in phenotypes %}
+                                <button type="button" class="btn btn-sm btn-outline-secondary phenotype-btn"
+                                        data-phenotype="{{ p }}">
+                                    {{ p.replace('_', ' ').title() }}
+                                </button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">NHANES Cycles</label>
+                                <select class="form-select" name="cycles" multiple>
+                                    {% for cycle in cycles %}
+                                    <option value="{{ cycle }}" {% if cycle == '2017-2018' %}selected{% endif %}>
+                                        {{ cycle }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <small class="text-muted">Hold Ctrl/Cmd to select multiple cycles</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Analysis Type</label>
+                                <select class="form-select" name="analysis_type">
+                                    <option value="cross_sectional">Cross-Sectional</option>
+                                    <option value="cohort">Cohort (Longitudinal)</option>
+                                    <option value="case_control">Case-Control</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Upload Research Proposal (Optional)</label>
+                            <div class="border rounded p-4 text-center" id="dropZone">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
+                                <p class="mb-1">Drag & drop your Word document here</p>
+                                <p class="text-muted small">or click to browse (.docx, .doc)</p>
+                                <input type="file" class="d-none" name="proposal_file" id="fileInput" accept=".docx,.doc,.pdf">
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('fileInput').click()">
+                                    Choose File
+                                </button>
+                            </div>
+                            <div id="fileInfo" class="mt-2 d-none">
+                                <span class="badge bg-success"><i class="fas fa-file-word me-1"></i><span id="fileName"></span></span>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-play me-2"></i>Create and Run Analysis
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <i class="fas fa-lightbulb me-2"></i>Tips for Best Results
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Use standard NHANES variable names when possible (e.g., BMXBMI, BPXSY1)</li>
+                        <li>For survival analyses, include mortality data (MORTSTAT, PERMTH_INT)</li>
+                        <li>Multiple survey cycles increase sample size but require weight adjustment</li>
+                        <li>Uploading a detailed research proposal improves variable mapping accuracy</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Phenotype quick selection
+document.querySelectorAll('.phenotype-btn').forEach(btn => {
+    btn.addEventListener('click', async function() {
+        const phenotype = this.dataset.phenotype;
+        try {
+            const resp = await fetch('/api/variables/phenotype/' + phenotype);
+            const data = await resp.json();
+            if (data.exposure && data.exposure.length > 0) {
+                document.getElementById('exposure').value = data.exposure.map(v => v.code).join(', ');
+            }
+            if (data.outcome && data.outcome.length > 0) {
+                document.getElementById('outcome').value = data.outcome.map(v => v.code).join(', ');
+            }
+            // Highlight selected button
+            document.querySelectorAll('.phenotype-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        } catch (e) {
+            console.error('Error:', e);
+        }
+    });
+});
+
+// File upload
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const fileInfo = document.getElementById('fileInfo');
+const fileName = document.getElementById('fileName');
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('border-primary'); });
+dropZone.addEventListener('dragleave', e => { dropZone.classList.remove('border-primary'); });
+dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('border-primary');
+    if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        showFileInfo(e.dataTransfer.files[0]);
+    }
+});
+
+fileInput.addEventListener('change', e => {
+    if (e.target.files.length) showFileInfo(e.target.files[0]);
+});
+
+function showFileInfo(file) {
+    fileName.textContent = file.name;
+    fileInfo.classList.remove('d-none');
+}
+
+// Form submission
+document.getElementById('projectForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    try {
+        const resp = await fetch('/api/projects', { method: 'POST', body: formData });
+        const data = await resp.json();
+        
+        if (data.project_id) {
+            // Start analysis
+            const runResp = await fetch('/api/projects/' + data.project_id + '/run', { method: 'POST' });
+            const runData = await runResp.json();
+            
+            // Redirect to project detail
+            window.location.href = '/project/' + data.project_id;
+        }
+    } catch (e) {
+        alert('Error creating project: ' + e.message);
+    }
+});
+</script>
+{% endblock %}
