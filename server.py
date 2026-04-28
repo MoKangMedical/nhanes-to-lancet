@@ -459,6 +459,171 @@ async def get_paper(project_id: str, section: str = "full_text"):
     content = paper_path.read_text(encoding="utf-8")
     return {"section": section, "content": content, "project_id": project_id}
 
+
+# ============================================================
+# 统计方法API
+# ============================================================
+
+@app.get("/api/methods")
+async def list_methods():
+    """列出支持的统计方法"""
+    methods = [
+        {
+            "id": "survey_logistic",
+            "name": "Survey-Weighted Logistic Regression",
+            "description": "Complex survey design-adjusted logistic regression for binary outcomes",
+            "type": "regression",
+            "outcome_type": "binary",
+            "r_package": "survey",
+            "r_function": "svyglm(family=binomial)"
+        },
+        {
+            "id": "survey_linear",
+            "name": "Survey-Weighted Linear Regression",
+            "description": "Complex survey design-adjusted linear regression for continuous outcomes",
+            "type": "regression",
+            "outcome_type": "continuous",
+            "r_package": "survey",
+            "r_function": "svyglm(family=gaussian)"
+        },
+        {
+            "id": "survey_poisson",
+            "name": "Survey-Weighted Poisson Regression",
+            "description": "Survey-adjusted Poisson regression for count outcomes and rate ratios",
+            "type": "regression",
+            "outcome_type": "count",
+            "r_package": "survey",
+            "r_function": "svyglm(family=poisson)"
+        },
+        {
+            "id": "survey_cox",
+            "name": "Survey-Weighted Cox Proportional Hazards",
+            "description": "Survival analysis accounting for NHANES complex survey design",
+            "type": "survival",
+            "outcome_type": "time-to-event",
+            "r_package": "survey",
+            "r_function": "svycoxph"
+        },
+        {
+            "id": "survey_kaplan_meier",
+            "name": "Survey-Weighted Kaplan-Meier",
+            "description": "Non-parametric survival curves with survey weights",
+            "type": "survival",
+            "outcome_type": "time-to-event",
+            "r_package": "survey",
+            "r_function": "svykm"
+        },
+        {
+            "id": "survey_chi_square",
+            "name": "Survey-Weighted Chi-Square Test",
+            "description": "Rao-Scott adjusted chi-square test for categorical variables",
+            "type": "hypothesis_test",
+            "outcome_type": "categorical",
+            "r_package": "survey",
+            "r_function": "svychisq"
+        },
+        {
+            "id": "survey_ttest",
+            "name": "Survey-Weighted T-Test",
+            "description": "Design-adjusted t-test for comparing means across groups",
+            "type": "hypothesis_test",
+            "outcome_type": "continuous",
+            "r_package": "survey",
+            "r_function": "svyttest"
+        },
+        {
+            "id": "survey_descriptive",
+            "name": "Survey-Weighted Descriptive Statistics",
+            "description": "Weighted means, proportions, percentiles with standard errors",
+            "type": "descriptive",
+            "outcome_type": "any",
+            "r_package": "survey",
+            "r_function": "svymean, svytotal, svyquantile"
+        },
+        {
+            "id": "survey_subgroup",
+            "name": "Subgroup Analysis with Interaction",
+            "description": "Stratified analyses with interaction tests for effect modification",
+            "type": "subgroup",
+            "outcome_type": "any",
+            "r_package": "survey",
+            "r_function": "svyglm with interaction terms"
+        },
+        {
+            "id": "multiple_imputation",
+            "name": "Multiple Imputation (MICE)",
+            "description": "Handle missing data using multiple imputation by chained equations",
+            "type": "preprocessing",
+            "outcome_type": "any",
+            "r_package": "mice",
+            "r_function": "mice"
+        },
+    ]
+    return {"methods": methods, "total": len(methods)}
+
+
+# ============================================================
+# Demo分析API
+# ============================================================
+
+@app.post("/api/demo/analyze")
+async def demo_analyze(request: Request):
+    """快速Demo分析 - 使用预设参数演示完整流程"""
+    demo_results = {
+        "demo_id": f"demo_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+        "status": "completed",
+        "study": {
+            "title": "Association between BMI and Hypertension in US Adults",
+            "design": "Cross-sectional study",
+            "data_source": "NHANES 2017-2018",
+            "population": "US adults aged 20 years and older",
+            "sample_size": 4902,
+        },
+        "variables": {
+            "exposure": {"code": "BMXBMI", "description": "Body Mass Index (kg/m2)"},
+            "outcome": {"code": "BPQ020", "description": "Ever told had high blood pressure"},
+            "covariates": ["RIDAGEYR", "RIAGENDR", "RIDRETH1", "DMDEDUC2", "INDFMPIR", "SMQ020"],
+        },
+        "results": {
+            "table1": {
+                "mean_age": 48.3,
+                "sd_age": 17.2,
+                "pct_female": 51.4,
+                "mean_bmi": 28.7,
+                "sd_bmi": 6.8,
+                "pct_hypertension": 34.2,
+                "pct_diabetes": 12.1,
+                "pct_smoker": 15.8,
+            },
+            "regression": {
+                "model1_crude": {"or": 1.08, "ci_low": 1.06, "ci_high": 1.10, "p_value": "<0.001"},
+                "model2_adjusted": {"or": 1.07, "ci_low": 1.05, "ci_high": 1.09, "p_value": "<0.001"},
+                "model3_full": {"or": 1.06, "ci_low": 1.04, "ci_high": 1.08, "p_value": "<0.001"},
+            },
+            "subgroup": {
+                "by_sex": {
+                    "male": {"or": 1.05, "ci_low": 1.02, "ci_high": 1.08},
+                    "female": {"or": 1.07, "ci_low": 1.04, "ci_high": 1.10},
+                    "interaction_p": 0.32,
+                },
+                "by_age": {
+                    "age_lt_60": {"or": 1.07, "ci_low": 1.04, "ci_high": 1.10},
+                    "age_gte_60": {"or": 1.05, "ci_low": 1.02, "ci_high": 1.08},
+                    "interaction_p": 0.45,
+                },
+            },
+        },
+        "interpretation": (
+            "Each 1 kg/m2 increase in BMI was associated with 6% higher odds of hypertension "
+            "(OR 1.06, 95% CI 1.04-1.08, P<0.001) after adjusting for age, sex, race/ethnicity, "
+            "education, income, and smoking status. The association was consistent across sex and "
+            "age subgroups (P for interaction >0.05)."
+        ),
+        "generated_at": datetime.now().isoformat(),
+    }
+    return demo_results
+
+
 # ============================================================
 # 启动
 # ============================================================
