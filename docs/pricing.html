@@ -1,23 +1,249 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Pricing - Nhanes To Lancet</title>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing — NHANES to Lancet | Automated Epidemiological Research</title>
+<meta name="description" content="NHANES to Lancet pricing: Free academic tier, Pro for research teams, Enterprise for institutions. Automated epidemiological analysis and manuscript generation.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23A51C30'/><text x='50' y='68' text-anchor='middle' font-size='50' fill='white' font-weight='bold'>N</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://mokangmedical.github.io/opc-homepage/shared-design-system.css">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}:root{--p:#22c55e;--bg:#0a0a0f;--s:#12121a;--t:#e2e8f0;--m:#94a3b8;--b:rgba(255,255,255,.06)}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--t);line-height:1.6}a{color:var(--p);text-decoration:none}
-.nav{position:fixed;top:0;left:0;right:0;background:rgba(10,10,15,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--b);z-index:1000;padding:.8rem 2rem;display:flex;align-items:center;justify-content:space-between}
-.nb{font-size:1.2rem;font-weight:700;color:var(--p)}.nl{display:flex;gap:1.5rem;align-items:center}.nl a{color:var(--m);font-size:.85rem}
-.hero{padding:8rem 2rem 4rem;text-align:center}.hero h1{font-size:2.5rem;font-weight:800}
-.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;max-width:1000px;margin:0 auto;padding:2rem}
-.price-card{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:2.5rem;text-align:center;position:relative}
-.price-card.featured{border-color:#22c55e;box-shadow:0 0 40px #22c55e20}
-.price-card.featured::before{content:'POPULAR';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--p);color:#fff;padding:.2rem 1rem;border-radius:999px;font-size:.7rem;font-weight:700}
-.price-card h3{font-size:1.3rem;margin-bottom:.5rem}.price{font-size:2.5rem;font-weight:800;margin:1rem 0}.price span{font-size:1rem;font-weight:400;color:var(--m)}
-.price-card ul{list-style:none;text-align:left;margin:1.5rem 0}.price-card li{padding:.4rem 0;color:var(--m);font-size:.9rem}.price-card li::before{content:'\2713 ';color:var(--p)}
-.btn{display:inline-block;padding:.8rem 2rem;background:var(--p);color:#fff;border-radius:8px;font-weight:600;transition:all .2s;cursor:pointer;border:none;font-size:1rem;width:100%}.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px #22c55e40}
-footer{background:var(--s);border-top:1px solid var(--b);padding:2rem;text-align:center;margin-top:4rem}footer a{color:var(--m);margin:0 1rem;font-size:.85rem}
-@media(max-width:768px){.price-grid{grid-template-columns:1fr}.nl{display:none}}
-</style></head><body>
-<nav class="nav"><a href="index.html" class="nb">Nhanes To Lancet</a><div class="nl"><a href="index.html">Home</a><a href="features.html">Features</a><a href="pricing.html">Pricing</a><a href="https://github.com/MoKangMedical/nhanes-to-lancet">GitHub</a></div></nav>
-<section class="hero"><h1>Pricing</h1><p>Flexible plans for teams of all sizes</p></section>
-<div class="price-grid"><div class="price-card"><h3>Academic</h3><div class="price">$0<span>/month</span></div><ul><li>Open source</li><li>Basic analysis</li><li>Community</li></ul><a href="mailto:contact@mokangmedical.com?subject=Nhanes To Lancet - Academic" class="btn">Get Started</a></div><div class="price-card featured"><h3>Researcher</h3><div class="price">$99<span>/month</span></div><ul><li>Advanced analysis</li><li>Priority support</li><li>API</li></ul><a href="mailto:contact@mokangmedical.com?subject=Nhanes To Lancet - Researcher" class="btn">Get Started</a></div><div class="price-card"><h3>Institution</h3><div class="price">$399<span>/month</span></div><ul><li>Unlimited analyses</li><li>Custom methods</li><li>24/7 support</li></ul><a href="mailto:contact@mokangmedical.com?subject=Nhanes To Lancet - Institution" class="btn">Get Started</a></div></div>
-<footer><a href="index.html">Home</a><a href="features.html">Features</a><a href="pricing.html">Pricing</a><p style="color:var(--m);font-size:.8rem;margin-top:1rem">&copy; 2026 MoKangMedical</p></footer></body></html>
+:root {
+  --accent: #A51C30;
+  --accent-light: #D4354A;
+  --accent-glow: rgba(165,28,48,0.3);
+  --gradient: linear-gradient(135deg, #A51C30, #E8405A);
+}
+.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; max-width: 1100px; margin: 0 auto; }
+.price-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem 2rem; text-align: center; transition: all 0.3s; position: relative; display: flex; flex-direction: column; }
+.price-card:hover { border-color: var(--accent); transform: translateY(-6px); box-shadow: 0 12px 40px rgba(165,28,48,0.15); }
+.price-card.featured { border-color: var(--accent); box-shadow: 0 0 40px var(--accent-glow); transform: scale(1.04); }
+.price-card.featured:hover { transform: scale(1.04) translateY(-6px); }
+.price-badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--gradient); color: #fff; padding: 0.3rem 1.2rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; }
+.price-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+.price-card h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text); }
+.price-card .tier-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.5; }
+.price-amount { font-size: 3.2rem; font-weight: 800; margin-bottom: 0.25rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.price-amount .currency { font-size: 1.2rem; vertical-align: super; font-weight: 600; }
+.price-amount .period { font-size: 0.95rem; color: var(--text-muted); -webkit-text-fill-color: var(--text-muted); font-weight: 400; }
+.price-note { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1.5rem; }
+.feature-list { list-style: none; text-align: left; margin: 1.5rem 0; flex-grow: 1; }
+.feature-list li { padding: 0.6rem 0; color: var(--text-muted); font-size: 0.9rem; border-bottom: 1px solid rgba(51,65,85,0.5); display: flex; align-items: center; gap: 0.6rem; }
+.feature-list li:last-child { border-bottom: none; }
+.feature-list li .check { color: var(--success); font-weight: 700; flex-shrink: 0; }
+.feature-list li .cross { color: #64748b; flex-shrink: 0; }
+.feature-list li.disabled { color: #475569; }
+.price-btn { display: block; width: 100%; padding: 0.85rem; border-radius: 10px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s; border: none; text-align: center; text-decoration: none; margin-top: auto; }
+.price-btn-primary { background: var(--gradient); color: #fff; box-shadow: 0 4px 20px var(--accent-glow); }
+.price-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--accent-glow); color: #fff; }
+.price-btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.price-btn-outline:hover { border-color: var(--accent); color: var(--accent-light); }
+.comparison { max-width: 900px; margin: 0 auto; overflow-x: auto; }
+.comparison table { width: 100%; border-collapse: collapse; }
+.comparison th, .comparison td { padding: 1rem; text-align: center; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+.comparison th { color: var(--text); font-weight: 700; background: var(--bg-card); }
+.comparison th:first-child, .comparison td:first-child { text-align: left; }
+.comparison td { color: var(--text-muted); }
+.comparison td .check { color: var(--success); font-weight: 700; }
+.comparison td .cross { color: #475569; }
+.comparison tr:hover td { background: rgba(165,28,48,0.03); }
+.comparison .highlight-col { background: rgba(165,28,48,0.05); }
+.faq-grid { max-width: 800px; margin: 0 auto; }
+.faq-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1rem; cursor: pointer; transition: all 0.3s; }
+.faq-item:hover { border-color: var(--accent); }
+.faq-item h3 { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; }
+.faq-item h3::after { content: '+'; font-size: 1.3rem; color: var(--accent); transition: transform 0.3s; }
+.faq-item.open h3::after { content: '−'; }
+.faq-item p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-top: 0.75rem; display: none; }
+.faq-item.open p { display: block; }
+.cta-section { text-align: center; padding: 5rem 2rem; background: linear-gradient(135deg, rgba(165,28,48,0.08), rgba(232,64,90,0.08)); }
+.cta-section h2 { font-size: 2rem; font-weight: 800; color: var(--text); margin-bottom: 0.75rem; }
+.cta-section p { color: var(--text-muted); margin-bottom: 2rem; font-size: 1.1rem; }
+@media (max-width: 768px) {
+  .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
+  .price-card.featured { transform: none; }
+  .price-card.featured:hover { transform: translateY(-6px); }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="eco-nav">
+  <a class="nav-brand" href="https://mokangmedical.github.io/opc-homepage/">MoKangMedical</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="features.html">Features</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="guide/index.html">Guide</a>
+    <a href="api/index.html">API</a>
+    <a href="https://github.com/MoKangMedical/nhanes-to-lancet">GitHub</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <span class="badge">Simple, Transparent Pricing</span>
+  <h1>Choose Your Plan</h1>
+  <p class="subtitle">Transform NHANES survey data into Lancet-quality publications. Start free, scale as your epidemiological research grows.</p>
+</section>
+
+<!-- PRICING TIERS -->
+<section class="section">
+  <div class="pricing-grid">
+
+    <!-- FREE TIER -->
+    <div class="price-card fade-up">
+      <div class="price-icon">🆓</div>
+      <h3>Free</h3>
+      <p class="tier-desc">For individual epidemiologists exploring NHANES data analysis.</p>
+      <div class="price-amount">$0</div>
+      <p class="price-note">Free forever — no credit card required</p>
+      <ul class="feature-list">
+        <li><span class="check">✓</span> Access NHANES demo datasets</li>
+        <li><span class="check">✓</span> Basic descriptive statistics</li>
+        <li><span class="check">✓</span> Survey-weighted means & proportions</li>
+        <li><span class="check">✓</span> 2 weighted linear regression analyses/mo</li>
+        <li><span class="check">✓</span> Community support via GitHub</li>
+        <li><span class="check">✓</span> DOCX output (basic template)</li>
+        <li class="disabled"><span class="cross">✗</span> Advanced survey-weighted models</li>
+        <li class="disabled"><span class="cross">✗</span> Lancet-formatted manuscripts</li>
+      </ul>
+      <a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="price-btn price-btn-outline">Get Started on GitHub</a>
+    </div>
+
+    <!-- PRO TIER -->
+    <div class="price-card featured fade-up">
+      <div class="price-badge">Most Popular</div>
+      <div class="price-icon">⚡</div>
+      <h3>Pro</h3>
+      <p class="tier-desc">For research teams conducting publishable NHANES epidemiological studies.</p>
+      <div class="price-amount"><span class="currency">$</span>99<span class="period">/mo</span></div>
+      <p class="price-note">Billed annually or $129/month-to-month</p>
+      <ul class="feature-list">
+        <li><span class="check">✓</span> All NHANES cycles (1999–2023)</li>
+        <li><span class="check">✓</span> Unlimited survey-weighted analyses</li>
+        <li><span class="check">✓</span> Full statistical engine (Cox, logistic, multinomial)</li>
+        <li><span class="check">✓</span> Subgroup & interaction analyses</li>
+        <li><span class="check">✓</span> PICO framework extraction</li>
+        <li><span class="check">✓</span> Lancet-formatted manuscript generation</li>
+        <li><span class="check">✓</span> Submission package builder</li>
+        <li><span class="check">✓</span> Priority email support</li>
+        <li><span class="check">✓</span> API access (5,000 requests/day)</li>
+      </ul>
+      <a href="mailto:contact@mokangmedical.com?subject=NHANES to Lancet - Pro" class="price-btn price-btn-primary">Start Pro Trial</a>
+    </div>
+
+    <!-- ENTERPRISE TIER -->
+    <div class="price-card fade-up">
+      <div class="price-icon">🏢</div>
+      <h3>Enterprise</h3>
+      <p class="tier-desc">For universities and public health institutions requiring custom deployments.</p>
+      <div class="price-amount" style="font-size:2.2rem;line-height:2.5rem;">Custom</div>
+      <p class="price-note">Tailored to your institution's needs</p>
+      <ul class="feature-list">
+        <li><span class="check">✓</span> Everything in Pro</li>
+        <li><span class="check">✓</span> Unlimited team members</li>
+        <li><span class="check">✓</span> Multi-cycle cross-survey harmonization</li>
+        <li><span class="check">✓</span> Custom variable mapping pipelines</li>
+        <li><span class="check">✓</span> MEC exam & lab data integration</li>
+        <li><span class="check">✓</span> Custom journal templates (JAMA, BMJ, NEJM)</li>
+        <li><span class="check">✓</span> SSO & institutional authentication</li>
+        <li><span class="check">✓</span> Dedicated account manager</li>
+        <li><span class="check">✓</span> SLA guarantee (99.9% uptime)</li>
+        <li><span class="check">✓</span> On-premise deployment option</li>
+      </ul>
+      <a href="mailto:contact@mokangmedical.com?subject=NHANES to Lancet - Enterprise" class="price-btn price-btn-outline">Contact Sales</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- COMPARISON TABLE -->
+<section class="section">
+  <h2 class="section-title">Feature Comparison</h2>
+  <p class="section-desc">Detailed breakdown of what each plan includes for NHANES epidemiological research</p>
+  <div class="comparison">
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Free</th>
+          <th class="highlight-col">Pro</th>
+          <th>Enterprise</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>NHANES Cycles</td><td>Demo only</td><td class="highlight-col">All (1999–2023)</td><td>All + future</td></tr>
+        <tr><td>Survey-Weighted Analysis</td><td><span class="check">✓</span></td><td class="highlight-col"><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>Weighted Linear Regression</td><td>2/mo</td><td class="highlight-col"><span class="check">✓</span> Unlimited</td><td><span class="check">✓</span> Unlimited</td></tr>
+        <tr><td>Weighted Logistic Regression</td><td><span class="cross">✗</span></td><td class="highlight-col"><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>Cox Proportional Hazards</td><td><span class="cross">✗</span></td><td class="highlight-col"><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>Subgroup & Interaction</td><td><span class="cross">✗</span></td><td class="highlight-col"><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>PICO Extraction</td><td><span class="cross">✗</span></td><td class="highlight-col"><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>Lancet Manuscript Output</td><td><span class="cross">✗</span></td><td class="highlight-col"><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>Submission Package</td><td><span class="cross">✗</span></td><td class="highlight-col"><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>Cross-Cycle Harmonization</td><td><span class="cross">✗</span></td><td class="highlight-col"><span class="cross">✗</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>Custom Journal Templates</td><td><span class="cross">✗</span></td><td class="highlight-col"><span class="cross">✗</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>API Requests/Day</td><td>100</td><td class="highlight-col">5,000</td><td>Unlimited</td></tr>
+        <tr><td>Support</td><td>Community</td><td class="highlight-col">Priority Email</td><td>Dedicated Manager</td></tr>
+        <tr><td>SLA</td><td>Best effort</td><td class="highlight-col">99%</td><td>99.9%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section">
+  <h2 class="section-title">Frequently Asked Questions</h2>
+  <p class="section-desc">Common questions about NHANES to Lancet pricing</p>
+  <div class="faq-grid">
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <h3>What NHANES data cycles are included in the Free plan?</h3>
+      <p>The Free plan includes demo/synthetic NHANES data for testing the platform. Pro and Enterprise plans include all available NHANES cycles from 1999–2023, with automatic updates as new cycles are released.</p>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <h3>What statistical methods are available?</h3>
+      <p>Free: descriptive statistics, weighted means/proportions, basic linear regression. Pro: adds logistic regression, Cox proportional hazards, multinomial regression, subgroup analyses, interaction terms, and multiple imputation. Enterprise adds custom statistical pipelines.</p>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <h3>Can I generate manuscripts for journals other than The Lancet?</h3>
+      <p>Pro plans generate Lancet-formatted manuscripts with STROBE compliance. Enterprise plans support additional journal templates including JAMA, BMJ, NEJM, and custom formatting for your target journal.</p>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <h3>Is NHANES data usage compliant?</h3>
+      <p>NHANES data is publicly available from the CDC/NCHS. The platform follows all NCHS data use guidelines. Survey weights are applied according to NCHS analytical guidelines. Enterprise plans include additional compliance documentation.</p>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <h3>Do you offer academic discounts?</h3>
+      <p>Yes! Verified academic institutions receive 30% off Pro and Enterprise plans. Contact us at contact@mokangmedical.com with your institutional email for verification.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Ready to Accelerate Your NHANES Research?</h2>
+  <p>Join epidemiologists worldwide using automated analysis pipelines for publication-ready results.</p>
+  <div class="btn-group">
+    <a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn btn-primary">Start Free on GitHub</a>
+    <a href="mailto:contact@mokangmedical.com?subject=NHANES to Lancet Inquiry" class="btn btn-outline">Talk to Sales</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="features.html">Features</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="guide/index.html">Guide</a>
+    <a href="api/index.html">API</a>
+    <a href="https://github.com/MoKangMedical/nhanes-to-lancet">GitHub</a>
+  </div>
+  <p>&copy; 2026 MoKangMedical. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
