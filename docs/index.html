@@ -3,158 +3,379 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>NHANES to Lancet - MoKangMedical</title>
-<meta name="description" content="Automated NHANES data extraction, analysis, and manuscript preparation.">
-<meta property="og:title" content="NHANES to Lancet - MoKangMedical">
-<meta property="og:description" content="Automated NHANES data extraction, analysis, and manuscript preparation.">
+<title>NHANES to Lancet — Automated Epidemiological Research Platform</title>
+<meta name="description" content="Transform NHANES survey data into Lancet-quality publications. Automated data extraction, survey-weighted statistical analysis, and manuscript generation.">
+<meta property="og:title" content="NHANES to Lancet — Automated Epidemiological Research Platform">
+<meta property="og:description" content="Transform NHANES survey data into Lancet-quality publications in minutes, not months.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://mokangmedical.github.io/nhanes-to-lancet/">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1f3e5;</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23A51C30'/><text x='50' y='68' text-anchor='middle' font-size='50' fill='white' font-weight='bold'>N</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--p:#ef4444;--bg:#0a0a0f;--s:#12121a;--t:#e2e8f0;--m:#94a3b8;--b:rgba(255,255,255,.06);--card:#141b2d;--text:#e2e8f0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--t);line-height:1.6}
-a{color:var(--p);text-decoration:none}
-.nav{position:fixed;top:0;left:0;right:0;background:rgba(10,10,15,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--b);z-index:1000;padding:.8rem 2rem;display:flex;align-items:center;justify-content:space-between}
-.nb{font-size:1.2rem;font-weight:700;color:var(--p)}
-.nl{display:flex;gap:1.5rem;align-items:center}
-.nl a{color:var(--m);font-size:.85rem;transition:color .2s}
-.nl a:hover{color:var(--t)}
-.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,#ef444415,transparent 70%)}
-.hc{position:relative;max-width:800px}
-.hero h1{font-size:clamp(2.5rem,6vw,4.5rem);font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,#fff,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem}
-.sub{font-size:1.3rem;color:var(--m);margin-bottom:2rem}
-.cat{display:inline-block;padding:.4rem 1rem;background:#ef444422;border:1px solid #ef444444;border-radius:999px;font-size:.8rem;color:var(--p);margin-bottom:2rem}
-.btn{display:inline-block;padding:.8rem 2rem;background:var(--p);color:#fff;border-radius:8px;font-weight:600;transition:all .2s}
-.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px #ef444440}
-.bo{display:inline-block;padding:.6rem 1.5rem;border:1px solid var(--p);color:var(--p);border-radius:8px;font-weight:500;transition:all .2s}
-.bo:hover{background:var(--p);color:#fff}
-.sec{padding:5rem 2rem;max-width:1200px;margin:0 auto}
-.st{text-align:center;font-size:2.2rem;font-weight:700;margin-bottom:.5rem}
-.ss{text-align:center;color:var(--m);margin-bottom:3rem}
-.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem}
-.fc{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:2rem;transition:all .3s}
-.fc:hover{border-color:#ef444440;transform:translateY(-4px)}
-.fi{width:40px;height:40px;background:#ef444420;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:1rem}
-.fc h3{font-size:1.1rem;margin-bottom:.5rem}
-.fc p{color:var(--m);font-size:.9rem}
-.pg{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;margin-top:2rem}
-.pc{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:2rem;text-align:center;transition:all .3s}
-.pc:hover{border-color:#ef444440}
-.pr{font-size:2.5rem;font-weight:800;color:var(--p);margin:1rem 0}
-.pc p{color:var(--m);margin-bottom:1.5rem}
-.cta{text-align:center;padding:5rem 2rem;background:linear-gradient(135deg,#ef444410,transparent)}
-footer{text-align:center;padding:2rem;color:var(--m);font-size:.8rem;border-top:1px solid var(--b)}
-footer a{color:var(--m)}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin:3rem 0}
-.stat{text-align:center}
-.stat .num{font-size:2.5rem;font-weight:800;color:var(--p)}
-.stat .lbl{color:var(--m);font-size:.85rem}
-@media(max-width:768px){.nl{display:none}.fg,.pg{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+:root{
+  --primary:#A51C30;--primary-light:#D4354A;--primary-dark:#7A1524;
+  --bg:#0B0D17;--bg2:#111827;--bg3:#1E293B;
+  --text:#F1F5F9;--text2:#94A3B8;--text3:#64748B;
+  --border:rgba(255,255,255,.08);--card:#141B2D;
+  --success:#10B981;--info:#3B82F6;--warning:#F59E0B;
+}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+a{color:var(--primary-light);text-decoration:none;transition:color .2s}
+a:hover{color:var(--primary)}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;background:rgba(11,13,23,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);z-index:1000;padding:.6rem 2rem;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{font-size:1.15rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:.5rem}
+.nav-brand span{color:var(--primary)}
+.nav-links{display:flex;gap:1.2rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.82rem;font-weight:500;padding:.4rem .8rem;border-radius:6px;transition:all .2s}
+.nav-links a:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.nav-links .btn-nav{background:var(--primary);color:#fff;padding:.45rem 1.2rem;border-radius:6px;font-weight:600}
+.nav-links .btn-nav:hover{background:var(--primary-light)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:8rem 2rem 6rem;position:relative}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(165,28,48,.12),transparent 70%);pointer-events:none}
+.hero-content{position:relative;max-width:900px}
+.badge{display:inline-block;padding:.35rem 1rem;background:rgba(165,28,48,.15);border:1px solid rgba(165,28,48,.3);border-radius:999px;font-size:.75rem;font-weight:600;color:var(--primary-light);letter-spacing:.05em;text-transform:uppercase;margin-bottom:1.5rem}
+.hero h1{font-size:clamp(2.5rem,5.5vw,4.2rem);font-weight:900;letter-spacing:-.03em;line-height:1.1;margin-bottom:1.2rem}
+.hero h1 em{font-style:normal;color:var(--primary)}
+.hero-sub{font-size:1.15rem;color:var(--text2);max-width:650px;margin:0 auto 2.5rem;line-height:1.7}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.8rem;border-radius:8px;font-weight:600;font-size:.9rem;transition:all .2s;cursor:pointer;border:none}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-light);transform:translateY(-2px);box-shadow:0 8px 24px rgba(165,28,48,.3)}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-outline:hover{border-color:var(--text2);background:rgba(255,255,255,.03)}
+
+/* TERMINAL DEMO */
+.terminal{max-width:720px;margin:0 auto;background:#0D1117;border:1px solid rgba(255,255,255,.1);border-radius:12px;overflow:hidden;text-align:left;font-family:'SF Mono','Fira Code',monospace;font-size:.82rem}
+.terminal-bar{display:flex;gap:6px;padding:10px 16px;background:#161B22;border-bottom:1px solid rgba(255,255,255,.06)}
+.terminal-dot{width:10px;height:10px;border-radius:50%}
+.terminal-dot.r{background:#FF5F57}.terminal-dot.y{background:#FEBC2E}.terminal-dot.g{background:#28C840}
+.terminal-body{padding:16px;line-height:1.8;color:#C9D1D9}
+.terminal-body .prompt{color:var(--success)}.terminal-body .cmd{color:#FFA657}.terminal-body .out{color:#8B949E}
+.terminal-body .hl{color:var(--primary-light);font-weight:600}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;padding:4rem 2rem;max-width:1000px;margin:0 auto;text-align:center}
+.metric-num{font-size:2.8rem;font-weight:900;color:var(--primary)}
+.metric-label{color:var(--text2);font-size:.85rem;margin-top:.3rem}
+
+/* SECTIONS */
+.section{padding:6rem 2rem;max-width:1200px;margin:0 auto}
+.section-title{font-size:2.2rem;font-weight:800;text-align:center;margin-bottom:.5rem;letter-spacing:-.02em}
+.section-sub{text-align:center;color:var(--text2);margin-bottom:3.5rem;max-width:600px;margin-left:auto;margin-right:auto}
+
+/* WORKFLOW */
+.workflow{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem}
+.wf-step{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.8rem;position:relative;transition:all .3s}
+.wf-step:hover{border-color:rgba(165,28,48,.3);transform:translateY(-4px)}
+.wf-num{position:absolute;top:-14px;left:20px;width:28px;height:28px;background:var(--primary);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800}
+.wf-step h3{font-size:1rem;font-weight:700;margin-bottom:.5rem}
+.wf-step p{color:var(--text2);font-size:.85rem}
+
+/* FEATURES */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:2rem;transition:all .3s}
+.feat-card:hover{border-color:rgba(165,28,48,.3);transform:translateY(-3px)}
+.feat-icon{width:44px;height:44px;background:rgba(165,28,48,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem}
+.feat-card h3{font-size:1.05rem;font-weight:700;margin-bottom:.4rem}
+.feat-card p{color:var(--text2);font-size:.88rem}
+
+/* COMPARISON TABLE */
+.comp-table{width:100%;border-collapse:collapse;margin-top:2rem;font-size:.88rem}
+.comp-table th,.comp-table td{padding:.9rem 1.2rem;text-align:left;border-bottom:1px solid var(--border)}
+.comp-table th{color:var(--text2);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;background:var(--bg2)}
+.comp-table td:first-child{font-weight:600;color:var(--text)}
+.comp-table .check{color:var(--success);font-weight:700}
+.comp-table .cross{color:var(--text3)}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin:3rem 0}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;text-align:center}
+.stat-card .num{font-size:2rem;font-weight:800;color:var(--primary)}
+.stat-card .lbl{color:var(--text2);font-size:.82rem;margin-top:.2rem}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;max-width:1000px;margin:0 auto}
+.price-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.5rem 2rem;text-align:center;transition:all .3s;position:relative}
+.price-card.featured{border-color:var(--primary);transform:scale(1.03)}
+.price-card.featured::before{content:'Most Popular';position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:3px 14px;border-radius:20px;font-size:.72rem;font-weight:700}
+.price-card h3{font-size:1rem;color:var(--text2);font-weight:600;margin-bottom:.5rem}
+.price-card .price{font-size:2.8rem;font-weight:900;color:var(--text);margin-bottom:.3rem}
+.price-card .price span{font-size:1rem;color:var(--text3);font-weight:400}
+.price-card .desc{color:var(--text3);font-size:.82rem;margin-bottom:1.5rem}
+.price-card ul{list-style:none;margin-bottom:2rem;text-align:left}
+.price-card li{padding:.45rem 0;font-size:.88rem;color:var(--text2);display:flex;align-items:center;gap:.6rem}
+.price-card li::before{content:'\2713';color:var(--success);font-weight:700}
+
+/* CTA */
+.cta{text-align:center;padding:6rem 2rem;background:linear-gradient(135deg,rgba(165,28,48,.08),transparent)}
+.cta h2{font-size:2.2rem;font-weight:800;margin-bottom:1rem}
+.cta p{color:var(--text2);margin-bottom:2rem;max-width:500px;margin-left:auto;margin-right:auto}
+
+/* FOOTER */
+footer{text-align:center;padding:2.5rem 2rem;color:var(--text3);font-size:.8rem;border-top:1px solid var(--border)}
+footer a{color:var(--text2)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .metrics{grid-template-columns:repeat(2,1fr);gap:1.5rem}
+  .stats-row{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr}
+  .price-card.featured{transform:none}
+}
+
+/* SCROLL ANIMATIONS */
+.fade-in{opacity:0;transform:translateY(20px);transition:all .6s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
 </style>
-  <meta name="robots" content="index, follow">
 </head>
 <body>
+
+<!-- NAV -->
 <nav class="nav">
-<a href="https://mokangmedical.github.io/opc-homepage/" class="nb">MoKangMedical</a>
-<div class="nl">
-<a href="#features">Features</a>
-<a href="#pricing">Pricing</a>
-<a href="https://github.com/MoKangMedical/nhanes-to-lancet"><a href="pricing.html">定价</a>
-<a href="https://github.com/MoKangMedical">GitHub</a>
-<a href="https://mokangmedical.github.io/opc-homepage/">Ecosystem</a>
-</div>
+  <a href="index.html" class="nav-brand"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#A51C30"/><text x="12" y="17" text-anchor="middle" font-size="14" fill="white" font-weight="bold">N</text></svg> NHANES<span>&rarr;</span>Lancet</a>
+  <div class="nav-links">
+    <a href="#workflow">Workflow</a>
+    <a href="#features">Features</a>
+    <a href="demo/index.html">Live Demo</a>
+    <a href="variables/index.html">Variables</a>
+    <a href="guide/index.html">Guide</a>
+    <a href="api/index.html">API</a>
+    <a href="pricing.html" class="btn-nav">Pricing</a>
+    <a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn-nav">GitHub</a>
+  </div>
 </nav>
+
+<!-- HERO -->
 <section class="hero">
-<div class="hc">
-<span class="cat">Epidemiology</span>
-<h1>NHANES to Lancet</h1>
-<p class="sub">NHANES Data Analysis Pipeline</p>
-<div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
-<a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn">View on <a href="pricing.html">定价</a>
-<a href="https://github.com/MoKangMedical">GitHub</a>
-<a href="#features" class="bo">Explore Features</a>
-</div>
-</div>
+  <div class="hero-content">
+    <span class="badge">Epidemiology Research Platform</span>
+    <h1>From NHANES Data to<br><em>Lancet-Quality</em> Publication</h1>
+    <p class="hero-sub">Automated survey-weighted analysis, publication-ready figures, and manuscript generation. Transform months of epidemiological research into a reproducible, one-click pipeline.</p>
+    <div class="hero-btns">
+      <a href="demo/index.html" class="btn btn-primary">Try Live Demo</a>
+      <a href="guide/index.html" class="btn btn-outline">Read the Guide</a>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot r"></span><span class="terminal-dot y"></span><span class="terminal-dot g"></span>
+      </div>
+      <div class="terminal-body">
+        <div><span class="prompt">$</span> <span class="cmd">python run.py --topic "BMI and hypertension" --cycles 2017-2018</span></div>
+        <div class="out">&nbsp;</div>
+        <div class="out">&#9776; <span class="hl">Step 1/8</span>: Parsing research proposal...</div>
+        <div class="out">&#128270; <span class="hl">Step 2/8</span>: Mapping variables &rarr; BMXBMI, BPQ020, RIAGENDR...</div>
+        <div class="out">&#128229; <span class="hl">Step 3/8</span>: Downloading NHANES 2017-2018 from CDC...</div>
+        <div class="out">&#9881;&#65039; <span class="hl">Step 4/8</span>: Processing &amp; merging datasets (n=4,520)</div>
+        <div class="out">&#128202; <span class="hl">Step 5/8</span>: Survey-weighted logistic regression (OR=1.87, 95%CI 1.52-2.29)</div>
+        <div class="out">&#128200; <span class="hl">Step 6/8</span>: Generating Table 1, forest plots, Kaplan-Meier curves</div>
+        <div class="out">&#128218; <span class="hl">Step 7/8</span>: PubMed search &rarr; 23 related articles retrieved</div>
+        <div class="out">&#9997;&#65039; <span class="hl">Step 8/8</span>: Writing Lancet-format manuscript...</div>
+        <div class="out">&nbsp;</div>
+        <div class="out">&#10004; <span class="hl">Done!</span> Results: output/bmi_hypertension/results.zip</div>
+      </div>
+    </div>
+  </div>
 </section>
-<section class="sec" id="features">
-<h2 class="st">Capabilities</h2>
-<p class="ss">Automated NHANES data extraction, analysis, and manuscript preparation.</p>
-<div class="fg"><div class="fc"><div class="fi">◆</div><h3>Auto Data Download</h3><p>Advanced auto data download capabilities powered by AI</p></div><div class="fc"><div class="fi">◇</div><h3>Survey Analysis</h3><p>Advanced survey analysis capabilities powered by AI</p></div><div class="fc"><div class="fi">◈</div><h3>Weighted Stats</h3><p>Advanced weighted stats capabilities powered by AI</p></div><div class="fc"><div class="fi">◉</div><h3>Figure Generation</h3><p>Advanced figure generation capabilities powered by AI</p></div><div class="fc"><div class="fi">◊</div><h3>Manuscript Draft</h3><p>Advanced manuscript draft capabilities powered by AI</p></div><div class="fc"><div class="fi">○</div><h3>STROBE Compliance</h3><p>Advanced strobe compliance capabilities powered by AI</p></div>
+
+<!-- METRICS -->
+<div class="metrics">
+  <div class="fade-in"><div class="metric-num" data-val="150">0</div><div class="metric-label">NHANES Variables Indexed</div></div>
+  <div class="fade-in"><div class="metric-num" data-val="10">0</div><div class="metric-label">Phenotype Presets</div></div>
+  <div class="fade-in"><div class="metric-num" data-val="10">0</div><div class="metric-label">Survey Cycles (1999-2018)</div></div>
+  <div class="fade-in"><div class="metric-num" data-val="8">0</div><div class="metric-label">Pipeline Steps Automated</div></div>
 </div>
+
+<!-- WORKFLOW -->
+<section class="section" id="workflow">
+  <h2 class="section-title">8-Step Automated Pipeline</h2>
+  <p class="section-sub">From research question to submission-ready manuscript in one reproducible workflow</p>
+  <div class="workflow">
+    <div class="wf-step fade-in"><div class="wf-num">1</div><h3>Parse Proposal</h3><p>Upload a Word document or enter your research question. PICO/PECO framework automatically extracted using NLP.</p></div>
+    <div class="wf-step fade-in"><div class="wf-num">2</div><h3>Map Variables</h3><p>Intelligent mapping from your concepts to 150+ NHANES variables across demographics, labs, questionnaires, and mortality data.</p></div>
+    <div class="wf-step fade-in"><div class="wf-num">3</div><h3>Download Data</h3><p>Automated XPT file download from CDC NHANES FTP, with local parquet caching. Supports all 10 cycles from 1999-2018.</p></div>
+    <div class="wf-step fade-in"><div class="wf-num">4</div><h3>Process &amp; Merge</h3><p>Clean missing codes, recode variables, merge DEMO+LAB+Q datasets. Automatic survey weight adjustment for multi-cycle analysis.</p></div>
+    <div class="wf-step fade-in"><div class="wf-num">5</div><h3>Statistical Analysis</h3><p>Survey-weighted descriptive stats, Rao-Scott chi-square, logistic/linear regression, subgroup analysis with proper SE estimation.</p></div>
+    <div class="wf-step fade-in"><div class="wf-num">6</div><h3>Tables &amp; Figures</h3><p>Lancet-standard Table 1 (baseline), regression tables, forest plots, correlation heatmaps, Kaplan-Meier curves. 300 DPI output.</p></div>
+    <div class="wf-step fade-in"><div class="wf-num">7</div><h3>Literature Search</h3><p>Real-time PubMed search via NCBI E-utilities. Auto-retrieves related studies, formats Vancouver-style citations for your manuscript.</p></div>
+    <div class="wf-step fade-in"><div class="wf-num">8</div><h3>Write Manuscript</h3><p>Generate a Lancet-format paper: structured abstract, methods with STROBE compliance, results with embedded tables, and discussion.</p></div>
+  </div>
 </section>
-<section class="sec" id="pricing">
-<h2 class="st">Pricing</h2>
-<p class="ss">Flexible plans for every scale</p>
-<div class="pg">
-<div class="pc"><h3>Starter</h3><div class="pr">Free</div><p>Basic features and community support</p><a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="bo">Get Started</a></div>
-<div class="pc"><h3>Professional</h3><div class="pr">$299/mo</div><p>Full access with priority support</p><a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="bo">Start Trial</a></div>
-<div class="pc"><h3>Enterprise</h3><div class="pr">Custom</div><p>Custom deployment with SLA</p><a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="bo">Contact Sales</a></div>
-</div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <h2 class="section-title">Why NHANES to Lancet?</h2>
+  <p class="section-sub">Purpose-built for epidemiological research, not a generic data tool</p>
+  <div class="feat-grid">
+    <div class="feat-card fade-in">
+      <div class="feat-icon">&#127919;</div>
+      <h3>Survey-Weighted Statistics</h3>
+      <p>Proper NHANES complex survey design with MEC/interview weights, PSU, and strata. Not just &ldquo;add weights to regression&rdquo; &mdash; Taylor linearization SEs, Rao-Scott chi-square, and weight adjustment for multi-cycle pooling.</p>
+    </div>
+    <div class="feat-card fade-in">
+      <div class="feat-icon">&#128200;</div>
+      <h3>Publication-Quality Output</h3>
+      <p>300 DPI figures in Lancet color palette. Table 1 with means/SD or n/% by group. Forest plots with HR/OR and 95% CI. Correlation heatmaps. STROBE checklist compliance verification.</p>
+    </div>
+    <div class="feat-card fade-in">
+      <div class="feat-icon">&#128218;</div>
+      <h3>150+ Variable Knowledge Base</h3>
+      <p>Curated database of NHANES variables across 27 categories: demographics, body measures, blood pressure, labs, questionnaires, diet, physical activity, sleep, depression (PHQ-9), and mortality follow-up.</p>
+    </div>
+    <div class="feat-card fade-in">
+      <div class="feat-icon">&#129302;</div>
+      <h3>AI-Powered Paper Writing</h3><p>DeepSeek LLM integration for Lancet-format manuscript generation. Structured abstract, methods section with exact statistical parameters, results narrative, and discussion with strengths/limitations.</p>
+    </div>
+    <div class="feat-card fade-in">
+      <div class="feat-icon">&#128640;</div>
+      <h3>10 Phenotype Presets</h3><p>Pre-configured exposure/outcome/covariate sets for: obesity, diabetes, hypertension, dyslipidemia, CVD, smoking, depression, CKD, diet quality, and sleep disorders. One-click study setup.</p>
+    </div>
+    <div class="feat-card fade-in">
+      <div class="feat-icon">&#128230;</div>
+      <h3>Reproducible Results</h3><p>Every analysis produces a complete ZIP package: cleaned dataset, analysis scripts (Python + R), all tables/figures, generated manuscript, and a manifest with version info and parameters.</p>
+    </div>
+  </div>
 </section>
+
+<!-- COMPARISON TABLE -->
+<section class="section">
+  <h2 class="section-title">How We Compare</h2>
+  <p class="section-sub">NHANES analysis requires specialized knowledge. We encode that knowledge into software.</p>
+  <table class="comp-table fade-in">
+    <thead>
+      <tr><th>Capability</th><th>NHANES to Lancet</th><th>Generic Stats Tools</th><th>Manual Analysis</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Automatic CDC data download</td><td class="check">&#10003;</td><td class="cross">&mdash;</td><td class="cross">&mdash;</td></tr>
+      <tr><td>Survey-weighted analysis</td><td class="check">&#10003;</td><td>Partial</td><td class="check">&#10003;</td></tr>
+      <tr><td>NHANES variable knowledge base</td><td class="check">&#10003;</td><td class="cross">&mdash;</td><td class="cross">&mdash;</td></tr>
+      <tr><td>Lancet-format manuscript generation</td><td class="check">&#10003;</td><td class="cross">&mdash;</td><td class="cross">&mdash;</td></tr>
+      <tr><td>STROBE compliance check</td><td class="check">&#10003;</td><td class="cross">&mdash;</td><td>Manual</td></tr>
+      <tr><td>PubMed literature integration</td><td class="check">&#10003;</td><td class="cross">&mdash;</td><td class="cross">&mdash;</td></tr>
+      <tr><td>Reproducible pipeline</td><td class="check">&#10003;</td><td>Partial</td><td class="cross">&mdash;</td></tr>
+      <tr><td>Time to results</td><td class="check"><strong>~10 minutes</strong></td><td>Hours</td><td><strong>Weeks</strong></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- USE CASES -->
+<section class="section">
+  <h2 class="section-title">Built For</h2>
+  <p class="section-sub">Real epidemiological research scenarios, not toy examples</p>
+  <div class="stats-row">
+    <div class="stat-card fade-in">
+      <div style="font-size:1.5rem;margin-bottom:.5rem">&#127973;</div>
+      <h3 style="font-size:.95rem;font-weight:700;margin-bottom:.3rem">PhD Students &amp; Postdocs</h3>
+      <p style="color:var(--text2);font-size:.82rem">First NHANES paper without spending months learning survey design, SAS/STATA code, and Lancet formatting conventions.</p>
+    </div>
+    <div class="stat-card fade-in">
+      <div style="font-size:1.5rem;margin-bottom:.5rem">&#127975;</div>
+      <h3 style="font-size:.95rem;font-weight:700;margin-bottom:.3rem">Research Labs</h3>
+      <p style="color:var(--text2);font-size:.82rem">Rapid hypothesis testing across multiple NHANES cycles. Batch-process several research questions with consistent methodology.</p>
+    </div>
+    <div class="stat-card fade-in">
+      <div style="font-size:1.5rem;margin-bottom:.5rem">&#127760;</div>
+      <h3 style="font-size:.95rem;font-weight:700;margin-bottom:.3rem">Public Health Institutions</h3>
+      <p style="color:var(--text2);font-size:.82rem">Standardized, auditable analysis pipeline for population health surveillance. Reproducible reports for policy stakeholders.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="pricing">
+  <h2 class="section-title">Pricing</h2>
+  <p class="section-sub">Choose the plan that fits your research workflow</p>
+  <div class="pricing-grid">
+    <div class="price-card fade-in">
+      <h3>Starter</h3>
+      <div class="price">$0<span>/mo</span></div>
+      <p class="desc">For individual researchers exploring NHANES</p>
+      <ul>
+        <li>1 NHANES cycle per analysis</li>
+        <li>Basic descriptive statistics</li>
+        <li>Table 1 generation</li>
+        <li>3 analyses per month</li>
+        <li>Community support</li>
+      </ul>
+      <a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn btn-outline" style="width:100%">Get Started Free</a>
+    </div>
+    <div class="price-card featured fade-in">
+      <h3>Professional</h3>
+      <div class="price">$59<span>/mo</span></div>
+      <p class="desc">For research teams and active labs</p>
+      <ul>
+        <li>All 10 NHANES cycles (1999-2018)</li>
+        <li>Full survey-weighted analysis</li>
+        <li>AI paper writing &amp; forest plots</li>
+        <li>Survival analysis (R integration)</li>
+        <li>PubMed literature search</li>
+        <li>Unlimited analyses</li>
+        <li>Priority email support</li>
+      </ul>
+      <a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn btn-primary" style="width:100%">Start Free Trial</a>
+    </div>
+    <div class="price-card fade-in">
+      <h3>Enterprise</h3>
+      <div class="price">$199<span>/mo</span></div>
+      <p class="desc">For institutions and CROs</p>
+      <ul>
+        <li>All Professional features</li>
+        <li>Custom variable mapping</li>
+        <li>Multi-study batch processing</li>
+        <li>Dedicated account manager</li>
+        <li>SLA guarantee</li>
+        <li>On-premise deployment option</li>
+      </ul>
+      <a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn btn-outline" style="width:100%">Contact Sales</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
 <section class="cta">
-<h2>Ready to get started?</h2>
-<p style="color:var(--m);margin-bottom:2rem">Join leading organizations using NHANES to Lancet</p>
-<a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn">Get Started Free</a>
+  <h2>Ready to accelerate your research?</h2>
+  <p>Join researchers using NHANES to Lancet for faster, reproducible epidemiological analysis.</p>
+  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+    <a href="demo/index.html" class="btn btn-primary">Try Live Demo</a>
+    <a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn btn-outline">View on GitHub</a>
+  </div>
 </section>
-    <section id="pricing" style="padding:100px 0;background:#0a0e1a">
-        <div style="max-width:1200px;margin:0 auto;padding:0 24px">
-            <div style="text-align:center;margin-bottom:60px">
-                <h2 style="font-size:2.5rem;font-weight:700;margin-bottom:16px;color:#fff">Pricing</h2>
-                <p style="font-size:1.1rem;color:#94a3b8;max-width:560px;margin:0 auto">Choose the plan that accelerates your epidemiological research</p>
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;max-width:1000px;margin:0 auto">
-                <div style="background:#111827;border:1px solid #1e293b;border-radius:16px;padding:40px 32px">
-                    <h3 style="font-size:1.1rem;font-weight:600;color:#94a3b8;margin-bottom:8px">Starter</h3>
-                    <div style="font-size:2.5rem;font-weight:800;color:#fff;margin-bottom:4px">$0<span style="font-size:1rem;color:#64748b;font-weight:400">/mo</span></div>
-                    <p style="color:#64748b;font-size:14px;margin-bottom:24px">Perfect for individual researchers</p>
-                    <ul style="list-style:none;padding:0;margin:0 0 32px">
-                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> 1 NHANES cycle</li>
-                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> Basic regression analysis</li>
-                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> Table 1 generation</li>
-                    </ul>
-                    <a href="https://github.com/MoKangMedical/nhanes-to-lancet" style="display:block;text-align:center;padding:12px 24px;border-radius:10px;font-weight:600;font-size:14px;text-decoration:none;color:#fff;background:transparent;border:1px solid #1e293b">Get Started Free</a>
-                </div>
-                <div style="background:#111827;border:2px solid #dc2626;border-radius:16px;padding:40px 32px;position:relative;transform:scale(1.02)">
-                    <div style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;padding:4px 16px;border-radius:20px;font-size:12px;font-weight:600">Most Popular</div>
-                    <h3 style="font-size:1.1rem;font-weight:600;color:#ef4444;margin-bottom:8px">Professional</h3>
-                    <div style="font-size:2.5rem;font-weight:800;color:#fff;margin-bottom:4px">$59<span style="font-size:1rem;color:#64748b;font-weight:400">/mo</span></div>
-                    <p style="color:#64748b;font-size:14px;margin-bottom:24px">For research teams and labs</p>
-                    <ul style="list-style:none;padding:0;margin:0 0 32px">
-                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> All 10 NHANES cycles</li>
-                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> Survey-weighted analysis</li>
-                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> AI paper writing &amp; forest plots</li>
-                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> Priority email support</li>
-                    </ul>
-                    <a href="https://github.com/MoKangMedical/nhanes-to-lancet" style="display:block;text-align:center;padding:12px 24px;border-radius:10px;font-weight:600;font-size:14px;text-decoration:none;color:#fff;background:#dc2626;border:none">Get Started</a>
-                </div>
-                <div style="background:#111827;border:1px solid #1e293b;border-radius:16px;padding:40px 32px">
-                    <h3 style="font-size:1.1rem;font-weight:600;color:#94a3b8;margin-bottom:8px">Enterprise</h3>
-                    <div style="font-size:2.5rem;font-weight:800;color:#fff;margin-bottom:4px">$199<span style="font-size:1rem;color:#64748b;font-weight:400">/mo</span></div>
-                    <p style="color:#64748b;font-size:14px;margin-bottom:24px">For institutions and CROs</p>
-                    <ul style="list-style:none;padding:0;margin:0 0 32px">
-                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> All Professional features</li>
-                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;14px;gap:8px"><span style="color:#dc2626">&#10003;</span> Custom variable mapping</li>
-                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> Multi-study batch processing</li>
-                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> Dedicated account manager</li>
-                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> SLA guarantee</li>
-                    </ul>
-                    <a href="https://github.com/MoKangMedical/nhanes-to-lancet" style="display:block;text-align:center;padding:12px 24px;border-radius:10px;font-weight:600;font-size:14px;text-decoration:none;color:#fff;background:transparent;border:1px solid #1e293b">Contact Sales</a>
-                </div>
-            </div>
-        </div>
-    </section>
-    <footer>
-<p>&copy; 2025 MoKangMedical. All rights reserved. | <a href="https://mokangmedical.github.io/opc-homepage/">Ecosystem</a> | <a href="https://github.com/MoKangMedical"><a href="pricing.html">定价</a>
-<a href="https://github.com/MoKangMedical">GitHub</a></p>
+
+<!-- FOOTER -->
+<footer>
+  <p>&copy; 2026 MoKangMedical. Open-source epidemiological research platform. | <a href="https://mokangmedical.github.io/opc-homepage/">OPC Ecosystem</a> | <a href="terms/index.html">Terms</a> | <a href="https://github.com/MoKangMedical/nhanes-to-lancet">GitHub</a></p>
 </footer>
+
 <script>
-// Scroll reveal animation
-const obs=new IntersectionObserver(e=>{e.forEach(i=>{if(i.isIntersecting){i.target.style.opacity='1';i.target.style.transform='translateY(0)';obs.unobserve(i.target)}})},{threshold:.1});
-document.querySelectorAll('.fc,.pc').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(20px)';el.style.transition='all 0.6s ease';obs.observe(el)});
+// Scroll reveal
+const obs=new IntersectionObserver(e=>{e.forEach(i=>{if(i.isIntersecting){i.target.classList.add('visible');obs.unobserve(i.target)}})},{threshold:.1});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+
 // Counter animation
-document.querySelectorAll('.stat .num').forEach(el=>{const t=parseInt(el.dataset.val||0);let c=0;const s=t/60;const tm=setInterval(()=>{c+=s;if(c>=t){c=t;clearInterval(tm)}el.textContent=Math.floor(c).toLocaleString()},25)});
+document.querySelectorAll('.metric-num[data-val]').forEach(el=>{
+  const target=parseInt(el.dataset.val);
+  let current=0;
+  const step=target/60;
+  const timer=setInterval(()=>{
+    current+=step;
+    if(current>=target){current=target;clearInterval(timer)}
+    el.textContent=Math.floor(current).toLocaleString();
+  },25);
+});
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
 </script>
 </body>
 </html>
