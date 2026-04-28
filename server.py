@@ -23,6 +23,7 @@ import os
 import sys
 import json
 import uuid
+import math
 import shutil
 import logging
 import asyncio
@@ -48,13 +49,43 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger(__name__)
 
 # ============================================================
+# SafeJSONResponse - handles inf/nan in JSON output
+# ============================================================
+
+def _sanitize_for_json(obj):
+    """Recursively replace inf/nan with None in nested dicts/lists."""
+    if isinstance(obj, float):
+        if math.isinf(obj) or math.isnan(obj):
+            return None
+        return obj
+    elif isinstance(obj, dict):
+        return {k: _sanitize_for_json(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [_sanitize_for_json(v) for v in obj]
+    return obj
+
+
+class SafeJSONResponse(JSONResponse):
+    """JSONResponse that converts inf/nan to null for JSON compliance."""
+    def render(self, content) -> bytes:
+        sanitized = _sanitize_for_json(content)
+        return json.dumps(
+            sanitized,
+            ensure_ascii=False,
+            allow_nan=False,
+            default=str,
+        ).encode("utf-8")
+
+
+# ============================================================
 # FastAPI应用
 # ============================================================
 
 app = FastAPI(
     title="NHANES to Lancet",
     description="AI驱动的NHANES数据分析平台 — 从健康调查数据到顶级期刊",
-    version="2.0.0"
+    version="2.0.0",
+    default_response_class=SafeJSONResponse,
 )
 
 app.add_middleware(
