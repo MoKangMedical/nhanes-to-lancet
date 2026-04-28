@@ -103,6 +103,18 @@ async def project_detail(request: Request, project_id: str):
     })
 
 
+@app.get("/pricing", response_class=HTMLResponse)
+async def pricing_page(request: Request):
+    """Pricing page."""
+    return templates.TemplateResponse("pricing.html", {"request": request})
+
+
+@app.get("/api-docs", response_class=HTMLResponse)
+async def api_docs_page(request: Request):
+    """API documentation page."""
+    return templates.TemplateResponse("api_docs.html", {"request": request})
+
+
 @app.get("/variables", response_class=HTMLResponse)
 async def variables_browser(request: Request):
     """NHANES variable browser page."""
@@ -311,6 +323,80 @@ async def list_cycles():
 async def list_phenotypes():
     """List available phenotype categories."""
     return {"phenotypes": kb.list_phenotypes()}
+
+
+@app.post("/api/demo/{demo_type}")
+async def run_demo(demo_type: str):
+    """Run a pre-configured demo analysis."""
+    demo_configs = {
+        "bmi_hypertension": {
+            "title": "Association between BMI and Hypertension in US Adults",
+            "topic": "obesity and hypertension",
+            "exposure": "BMXBMI",
+            "outcome": "BPQ020",
+            "cycles": ["2017-2018"],
+            "analysis_type": "cross_sectional",
+        },
+        "diabetes_cvd": {
+            "title": "Diabetes and Cardiovascular Disease Mortality",
+            "topic": "diabetes and cardiovascular disease",
+            "exposure": "DIQ010",
+            "outcome": "MORTSTAT",
+            "cycles": ["2015-2016"],
+            "analysis_type": "cohort",
+        },
+        "depression_sleep": {
+            "title": "Sleep Duration and Depression in US Adults",
+            "topic": "depression and sleep",
+            "exposure": "SLQ060",
+            "outcome": "DPQ010",
+            "cycles": ["2017-2018"],
+            "analysis_type": "cross_sectional",
+        },
+    }
+    
+    config = demo_configs.get(demo_type)
+    if not config:
+        raise HTTPException(status_code=404, detail="Demo not found")
+    
+    project_id = f"demo_{demo_type}_{datetime.now().strftime('%H%M%S')}"
+    
+    project = {
+        "id": project_id,
+        "title": config["title"],
+        "description": f"Demo analysis: {config['topic']}",
+        "topic": config["topic"],
+        "cycles": config["cycles"],
+        "analysis_type": config["analysis_type"],
+        "outcome": config["outcome"],
+        "exposure": config["exposure"],
+        "file_path": None,
+        "status": "running",
+        "progress": 0,
+        "created_at": datetime.now().isoformat(),
+        "results": None,
+    }
+    
+    projects[project_id] = project
+    
+    # Run pipeline synchronously for demo
+    try:
+        orchestrator = PipelineOrchestrator(project_id=project_id)
+        results = orchestrator.run_full_pipeline(
+            research_topic=config["topic"],
+            cycles=config["cycles"],
+            analysis_type=config["analysis_type"],
+            outcome_var=config["outcome"],
+            exposure_var=config["exposure"],
+        )
+        project["results"] = results
+        project["status"] = results.get("status", "completed")
+        project["progress"] = 100
+    except Exception as e:
+        project["status"] = "failed"
+        project["error"] = str(e)
+    
+    return {"project_id": project_id, "status": project["status"]}
 
 
 @app.get("/health")

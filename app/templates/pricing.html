@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Pricing - NHANES to Lancet{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Simple, Transparent Pricing</h2>
+        <p class="text-muted">Start free. Scale as your research grows.</p>
+    </div>
+    
+    <div class="row g-4 justify-content-center">
+        <!-- Free Tier -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold">Starter</h5>
+                    <div class="my-3">
+                        <span class="display-5 fw-bold">$0</span>
+                        <span class="text-muted">/month</span>
+                    </div>
+                    <p class="text-muted small">Perfect for exploring the platform and running your first analysis.</p>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>3 analyses per month</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Single NHANES cycle</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Basic tables & figures</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Markdown paper output</li>
+                        <li class="mb-2 text-muted"><i class="fas fa-times me-2"></i>R script download</li>
+                        <li class="mb-2 text-muted"><i class="fas fa-times me-2"></i>Multi-cycle analysis</li>
+                        <li class="mb-2 text-muted"><i class="fas fa-times me-2"></i>Priority support</li>
+                    </ul>
+                    <a href="/new-project" class="btn btn-outline-primary w-100">Get Started Free</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pro Tier -->
+        <div class="col-md-4">
+            <div class="card h-100 border-danger">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h5 class="fw-bold">Professional</h5>
+                        <span class="badge bg-danger">Popular</span>
+                    </div>
+                    <div class="my-3">
+                        <span class="display-5 fw-bold">$49</span>
+                        <span class="text-muted">/month</span>
+                    </div>
+                    <p class="text-muted small">For active researchers who need full capabilities.</p>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i><strong>Unlimited</strong> analyses</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>All NHANES cycles</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Publication-ready figures (300 DPI)</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Word & LaTeX paper export</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>R script download</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Sensitivity analyses</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Prior NHANES experience not needed</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Email support</li>
+                    </ul>
+                    <a href="/new-project" class="btn btn-danger w-100">Start 14-Day Free Trial</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Institution Tier -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold">Institution</h5>
+                    <div class="my-3">
+                        <span class="display-5 fw-bold">$199</span>
+                        <span class="text-muted">/month</span>
+                    </div>
+                    <p class="text-muted small">For research groups and departments.</p>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Everything in Professional</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i><strong>5 user seats</strong></li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Custom branding</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>API access</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Bulk analysis</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Custom variable sets</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Dedicated support</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Invoice billing</li>
+                    </ul>
+                    <a href="mailto:contact@nhanes-lancet.com" class="btn btn-outline-dark w-100">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FAQ -->
+    <div class="mt-5">
+        <h4 class="text-center fw-bold mb-4">Frequently Asked Questions</h4>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="accordion" id="faq">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#faq1">Can I use this for my actual research?</button></h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faq"><div class="accordion-body">Yes. The platform performs real NHANES data analysis with proper survey weights. Always verify results against your own analysis before submission.</div></div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq2">Which NHANES cycles are supported?</button></h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">All cycles from 1999-2000 through 2017-2020, including the pandemic-affected 2017-March 2020 pre-pandemic cycle.</div></div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq3">Do I need R installed?</button></h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">No. The platform runs R analyses on the server. You can download the generated R scripts for reproducibility.</div></div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq4">Can I edit the generated paper?</button></h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">Yes. The paper is generated as a starting point. We strongly recommend reviewing, editing, and adding your own expertise before submission.</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

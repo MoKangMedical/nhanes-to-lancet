@@ -1,52 +1,83 @@
 {% extends "base.html" %}
+{% block title %}NHANES to Lancet - Transform Survey Data into Lancet Publications{% endblock %}
 
-{% block title %}NHANES to Lancet - AI Epidemiological Research{% endblock %}
+{% block extra_css %}
+<style>
+    .hero { background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%); color: white; padding: 5rem 0 4rem; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; right: -20%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(165,28,48,0.15) 0%, transparent 70%); border-radius: 50%; }
+    .hero::after { content: ''; position: absolute; bottom: -30%; left: -10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(30,64,175,0.1) 0%, transparent 70%); border-radius: 50%; }
+    .hero h1 { font-size: 3rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; }
+    .hero h1 .accent { background: linear-gradient(135deg, #EF4444, #F97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero .subtitle { font-size: 1.15rem; color: rgba(255,255,255,0.7); max-width: 550px; line-height: 1.6; }
+    .trust-bar { background: #F8FAFC; border-bottom: 1px solid #E2E8F0; padding: 1rem 0; }
+    .trust-bar .trust-item { display: flex; align-items: center; gap: 0.5rem; color: #64748B; font-size: 0.85rem; font-weight: 500; }
+    .trust-bar .trust-item i { color: #10B981; }
+    .metric-strip { background: white; border: 1px solid #E2E8F0; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .metric-strip .metric { text-align: center; }
+    .metric-strip .metric .value { font-size: 1.75rem; font-weight: 800; color: #0F172A; }
+    .metric-strip .metric .label { font-size: 0.75rem; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; }
+    .demo-card { background: white; border: 2px solid #E2E8F0; border-radius: 12px; padding: 2rem; transition: all 0.2s; }
+    .demo-card:hover { border-color: #A51C30; box-shadow: 0 8px 24px rgba(165,28,48,0.08); }
+    .demo-card h5 { font-weight: 700; color: #0F172A; }
+    .demo-card .badge { font-size: 0.7rem; padding: 0.25rem 0.5rem; }
+    .btn-hero { padding: 0.875rem 2rem; font-weight: 600; font-size: 1rem; border-radius: 8px; }
+    .btn-hero-primary { background: #A51C30; color: white; border: none; }
+    .btn-hero-primary:hover { background: #8B1528; color: white; }
+    .btn-hero-outline { background: transparent; color: white; border: 2px solid rgba(255,255,255,0.3); }
+    .btn-hero-outline:hover { border-color: white; color: white; }
+    .section-header { text-align: center; margin-bottom: 3rem; }
+    .section-header h2 { font-size: 2rem; font-weight: 800; color: #0F172A; letter-spacing: -0.02em; }
+    .section-header p { color: #64748B; max-width: 500px; margin: 0.5rem auto 0; }
+    .step-card { background: white; border: 1px solid #E2E8F0; border-radius: 12px; padding: 1.5rem; height: 100%; }
+    .step-card .step-num { width: 2rem; height: 2rem; border-radius: 50%; background: #A51C30; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; margin-bottom: 1rem; }
+    .step-card h5 { font-weight: 700; font-size: 1rem; color: #0F172A; }
+    .step-card p { font-size: 0.85rem; color: #64748B; margin: 0; }
+    .topic-grid .topic-item { background: white; border: 1px solid #E2E8F0; border-radius: 8px; padding: 1rem; text-align: center; transition: all 0.15s; cursor: pointer; }
+    .topic-grid .topic-item:hover { border-color: #A51C30; background: #FEF2F2; }
+    .topic-grid .topic-item i { font-size: 1.5rem; color: #A51C30; margin-bottom: 0.5rem; }
+    .topic-grid .topic-item span { font-size: 0.8rem; font-weight: 600; color: #334155; display: block; }
+    .output-card { background: white; border: 1px solid #E2E8F0; border-radius: 12px; overflow: hidden; }
+    .output-card .output-header { background: #F8FAFC; padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; font-weight: 700; font-size: 0.85rem; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; }
+    .output-card .output-body { padding: 1.5rem; }
+    .output-card pre { background: #0F172A; color: #E2E8F0; padding: 1rem; border-radius: 8px; font-size: 0.8rem; line-height: 1.5; margin: 0; overflow-x: auto; }
+    .output-card pre .comment { color: #64748B; }
+    .output-card pre .keyword { color: #F97316; }
+    .output-card pre .string { color: #10B981; }
+    .output-card pre .number { color: #3B82F6; }
+    .cta-section { background: linear-gradient(135deg, #0F172A, #1E293B); border-radius: 16px; padding: 3rem; text-align: center; }
+    .cta-section h3 { color: white; font-weight: 800; font-size: 1.75rem; }
+    .cta-section p { color: rgba(255,255,255,0.7); }
+    .comparison-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748B; }
+    .comparison-table .feature-name { font-weight: 600; color: #334155; }
+    .comparison-table .check { color: #10B981; }
+    .comparison-table .cross { color: #CBD5E1; }
+</style>
+{% endblock %}
 
 {% block content %}
-<section class="hero-section">
-    <div class="container">
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container position-relative">
         <div class="row align-items-center">
-            <div class="col-lg-7">
-                <span class="badge bg-danger mb-3">NHANES Research Platform</span>
-                <h1>From NHANES Data to<br><span style="color: #C93042;">Lancet Publication</span></h1>
-                <p class="mt-3">
-                    AI-powered platform that transforms National Health and Nutrition Examination Survey (NHANES) 
-                    data into publication-ready research papers meeting Lancet journal standards.
-                </p>
-                <div class="mt-4">
-                    <a href="/new-project" class="btn btn-primary btn-lg me-2">
-                        <i class="fas fa-rocket me-2"></i>Start New Project
-                    </a>
-                    <a href="/variables" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-database me-2"></i>Browse Variables
-                    </a>
+            <div class="col-lg-6">
+                <div class="mb-3"><span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-1">NHANES Research Platform v2.0</span></div>
+                <h1>Turn NHANES Data<br>into <span class="accent">Lancet Papers</span></h1>
+                <p class="subtitle mt-3">AI-powered epidemiological research platform. Upload your research question, get a publication-ready manuscript with survey-weighted analysis, tables, and figures — all meeting Lancet standards.</p>
+                <div class="mt-4 d-flex gap-3 flex-wrap">
+                    <a href="/new-project" class="btn btn-hero btn-hero-primary"><i class="fas fa-rocket me-2"></i>Start Free Analysis</a>
+                    <button class="btn btn-hero btn-hero-outline" onclick="runDemo()"><i class="fas fa-play me-2"></i>Watch Demo</button>
                 </div>
+                <div class="mt-3"><small class="text-white-50"><i class="fas fa-shield-alt me-1"></i>No signup required for first analysis</small></div>
             </div>
-            <div class="col-lg-5">
-                <div class="row g-3">
-                    <div class="col-6">
-                        <div class="card stat-card">
-                            <div class="stat-value">150K+</div>
-                            <div class="stat-label">NHANES Participants</div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="card stat-card">
-                            <div class="stat-value">2000+</div>
-                            <div class="stat-label">Variables Available</div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="card stat-card">
-                            <div class="stat-value">10</div>
-                            <div class="stat-label">Survey Cycles</div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="card stat-card">
-                            <div class="stat-value">30K+</div>
-                            <div class="stat-label">Published Papers</div>
-                        </div>
+            <div class="col-lg-6 mt-4 mt-lg-0">
+                <div class="metric-strip">
+                    <div class="row g-3">
+                        <div class="col-4"><div class="metric"><div class="value">150K+</div><div class="label">Participants</div></div></div>
+                        <div class="col-4"><div class="metric"><div class="value">2000+</div><div class="label">Variables</div></div></div>
+                        <div class="col-4"><div class="metric"><div class="value">10</div><div class="label">Cycles</div></div></div>
+                        <div class="col-4"><div class="metric"><div class="value">30K+</div><div class="label">Papers</div></div></div>
+                        <div class="col-4"><div class="metric"><div class="value">5min</div><div class="label">Analysis</div></div></div>
+                        <div class="col-4"><div class="metric"><div class="value">Lancet</div><div class="label">Standard</div></div></div>
                     </div>
                 </div>
             </div>
@@ -54,157 +85,241 @@
     </div>
 </section>
 
-<section class="container mb-5">
-    <h2 class="text-center mb-4">How It Works</h2>
+<!-- Trust Bar -->
+<section class="trust-bar">
+    <div class="container">
+        <div class="d-flex justify-content-center flex-wrap gap-4">
+            <div class="trust-item"><i class="fas fa-check-circle"></i> CDC Official Data</div>
+            <div class="trust-item"><i class="fas fa-check-circle"></i> Survey-Weighted Analysis</div>
+            <div class="trust-item"><i class="fas fa-check-circle"></i> STROBE Compliant</div>
+            <div class="trust-item"><i class="fas fa-check-circle"></i> R Statistical Engine</div>
+            <div class="trust-item"><i class="fas fa-check-circle"></i> PubMed Integration</div>
+        </div>
+    </div>
+</section>
+
+<!-- One-Click Demo Projects -->
+<section class="container py-5">
+    <div class="section-header">
+        <h2>Try a Live Demo</h2>
+        <p>See the platform in action with pre-configured research analyses</p>
+    </div>
     <div class="row g-4">
         <div class="col-md-4">
-            <div class="workflow-step">
-                <div class="step-number">1</div>
-                <div class="step-content">
-                    <h5>Define Research Question</h5>
-                    <p>Upload your research proposal or select a phenotype. Our AI extracts PICO elements and maps variables to NHANES database.</p>
+            <div class="demo-card">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="mb-0">BMI & Hypertension</h5>
+                    <span class="badge bg-danger">Popular</span>
                 </div>
+                <p class="text-muted small mb-3">Cross-sectional analysis of body mass index and hypertension prevalence using NHANES 2017-2018</p>
+                <div class="d-flex flex-wrap gap-1 mb-3">
+                    <span class="badge bg-light text-dark">BMXBMI</span>
+                    <span class="badge bg-light text-dark">BPQ020</span>
+                    <span class="badge bg-light text-dark">n=4,500</span>
+                </div>
+                <button class="btn btn-outline-danger btn-sm w-100" onclick="runDemo('bmi_hypertension')">
+                    <i class="fas fa-play me-1"></i>Run Demo
+                </button>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="workflow-step">
-                <div class="step-number">2</div>
-                <div class="step-content">
-                    <h5>Analyze NHANES Data</h5>
-                    <p>Automatically download data from CDC, apply survey weights, and run appropriate statistical analyses with Lancet-standard output.</p>
+            <div class="demo-card">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="mb-0">Diabetes & CVD</h5>
+                    <span class="badge bg-primary">Cohort</span>
                 </div>
+                <p class="text-muted small mb-3">Longitudinal association between diabetes and cardiovascular disease mortality with survival analysis</p>
+                <div class="d-flex flex-wrap gap-1 mb-3">
+                    <span class="badge bg-light text-dark">DIQ010</span>
+                    <span class="badge bg-light text-dark">MORTSTAT</span>
+                    <span class="badge bg-light text-dark">n=8,200</span>
+                </div>
+                <button class="btn btn-outline-danger btn-sm w-100" onclick="runDemo('diabetes_cvd')">
+                    <i class="fas fa-play me-1"></i>Run Demo
+                </button>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="workflow-step">
-                <div class="step-number">3</div>
-                <div class="step-content">
-                    <h5>Generate Publication</h5>
-                    <p>Get a complete paper with structured abstract, all sections, tables, figures, and formatted references ready for submission.</p>
+            <div class="demo-card">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="mb-0">Depression & Sleep</h5>
+                    <span class="badge bg-success">PHQ-9</span>
                 </div>
+                <p class="text-muted small mb-3">Association between sleep duration and depression severity using PHQ-9 scores in US adults</p>
+                <div class="d-flex flex-wrap gap-1 mb-3">
+                    <span class="badge bg-light text-dark">DPQ010-090</span>
+                    <span class="badge bg-light text-dark">SLQ060</span>
+                    <span class="badge bg-light text-dark">n=5,800</span>
+                </div>
+                <button class="btn btn-outline-danger btn-sm w-100" onclick="runDemo('depression_sleep')">
+                    <i class="fas fa-play me-1"></i>Run Demo
+                </button>
             </div>
         </div>
     </div>
 </section>
 
-<section class="container mb-5">
+<!-- How It Works -->
+<section class="container py-5">
+    <div class="section-header">
+        <h2>Three Steps to Publication</h2>
+        <p>From research question to Lancet-ready manuscript</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="step-card">
+                <div class="step-num">1</div>
+                <h5>Define Your Study</h5>
+                <p>Upload a research proposal or select a phenotype. Our AI maps your variables to NHANES database codes automatically.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <h5>Analyze Data</h5>
+                <p>Platform downloads NHANES data from CDC, applies survey weights, runs regression models, and generates publication figures.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <h5>Download Paper</h5>
+                <p>Get a complete manuscript with structured abstract, all sections, Lancet-format tables, forest plots, and formatted references.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Output Preview -->
+<section class="container py-5">
+    <div class="section-header">
+        <h2>Publication-Ready Output</h2>
+        <p>Everything you need for a Lancet submission</p>
+    </div>
     <div class="row g-4">
         <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-header">
-                    <i class="fas fa-chart-line me-2"></i>Supported Analyses
-                </div>
-                <div class="card-body">
-                    <ul class="list-unstyled mb-0">
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Survey-weighted descriptive statistics</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Logistic regression (OR, 95% CI)</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Linear regression (Beta, SE)</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Kaplan-Meier survival analysis</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Cox proportional hazards (HR)</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Fine-Gray competing risk model</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Subgroup and interaction analyses</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Sensitivity analyses (multiple imputation)</li>
-                    </ul>
+            <div class="output-card h-100">
+                <div class="output-header"><i class="fas fa-table me-2"></i>Table 1: Baseline Characteristics</div>
+                <div class="output-body">
+                    <table class="table table-sm" style="font-size:0.8rem">
+                        <thead><tr><th>Characteristic</th><th>Overall (n=4,500)</th><th>Normal BMI</th><th>Obese</th><th>P</th></tr></thead>
+                        <tbody>
+                            <tr><td>Age, years</td><td>46.2 (0.3)</td><td>42.1 (0.4)</td><td>49.8 (0.5)</td><td>&lt;0.001</td></tr>
+                            <tr><td>Female, %</td><td>51.3</td><td>54.2</td><td>48.7</td><td>0.012</td></tr>
+                            <tr><td>SBP, mmHg</td><td>124.5 (0.4)</td><td>119.2 (0.5)</td><td>129.1 (0.6)</td><td>&lt;0.001</td></tr>
+                            <tr><td>Hypertension, %</td><td>32.4</td><td>18.7</td><td>45.2</td><td>&lt;0.001</td></tr>
+                            <tr><td>Diabetes, %</td><td>12.1</td><td>5.3</td><td>18.6</td><td>&lt;0.001</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-header">
-                    <i class="fas fa-file-alt me-2"></i>Lancet-Standard Output
-                </div>
-                <div class="card-body">
-                    <ul class="list-unstyled mb-0">
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Structured abstract (Background/Methods/Findings/Interpretation)</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Table 1: Baseline characteristics</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Table 2: Multivariable regression results</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Forest plots with OR/HR and 95% CI</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Kaplan-Meier survival curves</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>STROBE checklist compliance</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Vancouver-format references</li>
-                        <li><i class="fas fa-check text-success me-2"></i>300 DPI publication-ready figures</li>
-                    </ul>
+            <div class="output-card h-100">
+                <div class="output-header"><i class="fas fa-chart-bar me-2"></i>Regression Results</div>
+                <div class="output-body">
+                    <table class="table table-sm" style="font-size:0.8rem">
+                        <thead><tr><th>Variable</th><th>OR (95% CI)</th><th>P-value</th></tr></thead>
+                        <tbody>
+                            <tr><td>BMI (per 5 kg/m²)</td><td>1.42 (1.35-1.49)</td><td>&lt;0.001</td></tr>
+                            <tr><td>Age (per 10 years)</td><td>1.38 (1.31-1.45)</td><td>&lt;0.001</td></tr>
+                            <tr><td>Male vs Female</td><td>1.21 (1.08-1.36)</td><td>0.001</td></tr>
+                            <tr><td>Non-Hispanic Black</td><td>1.65 (1.42-1.91)</td><td>&lt;0.001</td></tr>
+                            <tr><td>Current Smoker</td><td>1.18 (1.02-1.37)</td><td>0.028</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="text-muted small mt-2">Model adjusted for age, sex, race, education, income, smoking, alcohol</div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<section class="container mb-5">
+<!-- Research Topics -->
+<section class="container py-5">
+    <div class="section-header">
+        <h2>Supported Research Topics</h2>
+        <p>Pre-configured variable sets for common epidemiological analyses</p>
+    </div>
+    <div class="topic-grid">
+        <div class="row g-3">
+            <div class="col-6 col-md-3"><div class="topic-item"><i class="fas fa-heartbeat"></i><span>Cardiovascular</span></div></div>
+            <div class="col-6 col-md-3"><div class="topic-item"><i class="fas fa-weight"></i><span>Obesity</span></div></div>
+            <div class="col-6 col-md-3"><div class="topic-item"><i class="fas fa-syringe"></i><span>Diabetes</span></div></div>
+            <div class="col-6 col-md-3"><div class="topic-item"><i class="fas fa-brain"></i><span>Depression</span></div></div>
+            <div class="col-6 col-md-3"><div class="topic-item"><i class="fas fa-lungs"></i><span>Hypertension</span></div></div>
+            <div class="col-6 col-md-3"><div class="topic-item"><i class="fas fa-smoking"></i><span>Smoking</span></div></div>
+            <div class="col-6 col-md-3"><div class="topic-item"><i class="fas fa-utensils"></i><span>Diet & Nutrition</span></div></div>
+            <div class="col-6 col-md-3"><div class="topic-item"><i class="fas fa-bed"></i><span>Sleep</span></div></div>
+            <div class="col-6 col-md-3"><div class="topic-item"><i class="fas fa-tint"></i><span>Cholesterol</span></div></div>
+            <div class="col-6 col-md-3"><div class="topic-item"><i class="fas fa-kidneys"></i><span>Kidney Disease</span></div></div>
+            <div class="col-6 col-md-3"><div class="topic-item"><i class="fas fa-bone"></i><span>Arthritis</span></div></div>
+            <div class="col-6 col-md-3"><div class="topic-item"><i class="fas fa-allergies"></i><span>Hepatitis</span></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- Comparison Table -->
+<section class="container py-5">
+    <div class="section-header">
+        <h2>Why NHANES to Lancet?</h2>
+        <p>Compared to manual analysis workflows</p>
+    </div>
     <div class="card">
-        <div class="card-header">
-            <i class="fas fa-dna me-2"></i>Supported Research Topics
-        </div>
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-3 col-6">
-                    <div class="text-center p-3 border rounded">
-                        <i class="fas fa-heartbeat fa-2x text-danger mb-2"></i>
-                        <h6 class="mb-0">Cardiovascular Disease</h6>
-                    </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="text-center p-3 border rounded">
-                        <i class="fas fa-weight fa-2x text-warning mb-2"></i>
-                        <h6 class="mb-0">Obesity & Metabolic</h6>
-                    </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="text-center p-3 border rounded">
-                        <i class="fas fa-syringe fa-2x text-primary mb-2"></i>
-                        <h6 class="mb-0">Diabetes</h6>
-                    </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="text-center p-3 border rounded">
-                        <i class="fas fa-brain fa-2x text-info mb-2"></i>
-                        <h6 class="mb-0">Depression & Mental Health</h6>
-                    </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="text-center p-3 border rounded">
-                        <i class="fas fa-lungs fa-2x text-success mb-2"></i>
-                        <h6 class="mb-0">Hypertension</h6>
-                    </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="text-center p-3 border rounded">
-                        <i class="fas fa-smoking fa-2x text-secondary mb-2"></i>
-                        <h6 class="mb-0">Smoking & Tobacco</h6>
-                    </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="text-center p-3 border rounded">
-                        <i class="fas fa-utensils fa-2x text-success mb-2"></i>
-                        <h6 class="mb-0">Diet & Nutrition</h6>
-                    </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="text-center p-3 border rounded">
-                        <i class="fas fa-bed fa-2x text-dark mb-2"></i>
-                        <h6 class="mb-0">Sleep Disorders</h6>
-                    </div>
-                </div>
-            </div>
+        <div class="card-body p-0">
+            <table class="table comparison-table mb-0">
+                <thead><tr><th>Feature</th><th class="text-center">Manual Analysis</th><th class="text-center">NHANES to Lancet</th></tr></thead>
+                <tbody>
+                    <tr><td class="feature-name">Data download & merge</td><td class="text-center">2-4 hours</td><td class="text-center"><span class="check"><i class="fas fa-check-circle"></i></span> 30 seconds</td></tr>
+                    <tr><td class="feature-name">Survey weight handling</td><td class="text-center">Manual coding</td><td class="text-center"><span class="check"><i class="fas fa-check-circle"></i></span> Automatic</td></tr>
+                    <tr><td class="feature-name">Variable mapping</td><td class="text-center">Hours of lookup</td><td class="text-center"><span class="check"><i class="fas fa-check-circle"></i></span> AI-powered</td></tr>
+                    <tr><td class="feature-name">Statistical analysis</td><td class="text-center">R/SAS scripting</td><td class="text-center"><span class="check"><i class="fas fa-check-circle"></i></span> Pre-built</td></tr>
+                    <tr><td class="feature-name">Publication tables</td><td class="text-center">Manual formatting</td><td class="text-center"><span class="check"><i class="fas fa-check-circle"></i></span> Lancet standard</td></tr>
+                    <tr><td class="feature-name">Forest plots & figures</td><td class="text-center">ggplot2 coding</td><td class="text-center"><span class="check"><i class="fas fa-check-circle"></i></span> Auto-generated</td></tr>
+                    <tr><td class="feature-name">Paper writing</td><td class="text-center">Days-weeks</td><td class="text-center"><span class="check"><i class="fas fa-check-circle"></i></span> 2 minutes</td></tr>
+                    <tr><td class="feature-name">STROBE compliance</td><td class="text-center">Manual checklist</td><td class="text-center"><span class="check"><i class="fas fa-check-circle"></i></span> Built-in</td></tr>
+                    <tr><td class="feature-name">Time to first draft</td><td class="text-center"><strong>2-4 weeks</strong></td><td class="text-center"><strong style="color:#A51C30">5 minutes</strong></td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </section>
 
-<section class="container mb-5">
-    <div class="card bg-dark text-white">
-        <div class="card-body p-4">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h3>Ready to Start Your Research?</h3>
-                    <p class="mb-0 opacity-75">Upload your research proposal or select a phenotype to begin your NHANES analysis.</p>
-                </div>
-                <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                    <a href="/new-project" class="btn btn-primary btn-lg">
-                        <i class="fas fa-arrow-right me-2"></i>Create Project
-                    </a>
-                </div>
-            </div>
-        </div>
+<!-- CTA -->
+<section class="container py-5">
+    <div class="cta-section">
+        <h3>Ready to Accelerate Your Research?</h3>
+        <p class="mb-4">Join researchers using NHANES to Lancet for faster, publication-ready analyses.</p>
+        <a href="/new-project" class="btn btn-hero btn-hero-primary btn-lg"><i class="fas fa-rocket me-2"></i>Start Your First Analysis — Free</a>
+        <div class="mt-3"><small class="text-white-50">No registration required. Results in minutes.</small></div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function runDemo(type) {
+    if (!type) { window.location.href = '/new-project'; return; }
+    
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Running...';
+    
+    try {
+        const resp = await fetch('/api/demo/' + type, { method: 'POST' });
+        const data = await resp.json();
+        if (data.project_id) {
+            window.location.href = '/project/' + data.project_id;
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-play me-1"></i>Run Demo';
+        }
+    } catch (e) {
+        alert('Error: ' + e.message);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-play me-1"></i>Run Demo';
+    }
+}
+</script>
 {% endblock %}
