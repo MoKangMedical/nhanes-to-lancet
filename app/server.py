@@ -91,10 +91,18 @@ async def new_project_page(request: Request):
 
 @app.get("/project/{project_id}", response_class=HTMLResponse)
 async def project_detail(request: Request, project_id: str):
-    """Project detail page."""
+    """Project detail page with full results visualization."""
     project = projects.get(project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
+    
+    # Use results template if analysis is complete
+    if project.get("results") and project["results"].get("status") == "completed":
+        return templates.TemplateResponse("results.html", {
+            "request": request,
+            "project": project,
+            "project_id": project_id,
+        })
     
     return templates.TemplateResponse("project_detail.html", {
         "request": request,

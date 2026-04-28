@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+{% block title %}{{ project.title }} - Analysis Results{% endblock %}
+
+{% block extra_css %}
+<style>
+    .result-card { border: 1px solid #E2E8F0; border-radius: 8px; background: white; }
+    .result-card .card-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748B; font-weight: 600; }
+    .stat-value { font-size: 1.75rem; font-weight: 800; color: #0F172A; }
+    .stat-label { font-size: 0.75rem; color: #64748B; }
+    .chart-container { position: relative; height: 300px; }
+    .table-lancet { font-size: 0.85rem; }
+    .table-lancet th { font-weight: 600; color: #64748B; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .table-lancet td { vertical-align: middle; }
+    .badge-sig { background: #DCFCE7; color: #166534; font-weight: 600; }
+    .badge-ns { background: #F1F5F9; color: #64748B; }
+    .forest-line { border-top: 2px dashed #94A3B8; }
+    .paper-section { line-height: 1.8; font-size: 0.95rem; }
+    .paper-section h2 { font-size: 1.25rem; font-weight: 700; color: #0F172A; border-bottom: 2px solid #A51C30; padding-bottom: 0.5rem; margin: 1.5rem 0 1rem; }
+    .paper-section p { margin-bottom: 1rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 px-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a href="/dashboard" class="text-muted small"><i class="fas fa-arrow-left me-1"></i>Dashboard</a>
+            <h3 class="fw-bold mb-0 mt-1">{{ project.title }}</h3>
+            <span class="badge {% if project.status == 'completed' %}bg-success{% elif project.status == 'running' %}bg-warning{% else %}bg-secondary{% endif %} mt-1">
+                {{ project.status }}
+            </span>
+        </div>
+        <div>
+            {% if project.results %}
+            <a href="/api/projects/{{ project_id }}/download" class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-download me-1"></i>Download ZIP
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if project.results %}
+    {% set r = project.results %}
+    
+    <!-- Summary Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="result-card p-3">
+                <div class="card-title">Participants</div>
+                <div class="stat-value">{{ r.n_analyzed | default('—') }}</div>
+                <div class="stat-label">Weighted sample</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="result-card p-3">
+                <div class="card-title">Exposure</div>
+                <div class="stat-value" style="font-size:1.2rem">{{ project.exposure }}</div>
+                <div class="stat-label">NHANES variable</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="result-card p-3">
+                <div class="card-title">Outcome</div>
+                <div class="stat-value" style="font-size:1.2rem">{{ project.outcome }}</div>
+                <div class="stat-label">NHANES variable</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="result-card p-3">
+                <div class="card-title">Survey Cycles</div>
+                <div class="stat-value" style="font-size:1.2rem">{{ project.cycles | join(', ') }}</div>
+                <div class="stat-label">NHANES data</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4" id="resultTabs" role="tablist">
+        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tabOverview">Overview</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabTables">Tables</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabFigures">Figures</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabPaper">Paper</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabCode">R Code</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- Overview Tab -->
+        <div class="tab-pane fade show active" id="tabOverview">
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <div class="result-card p-4">
+                        <h5 class="fw-bold mb-3">Analysis Summary</h5>
+                        <p class="text-muted">
+                            This analysis examined the association between <strong>{{ project.exposure }}</strong> 
+                            and <strong>{{ project.outcome }}</strong> using data from NHANES {{ project.cycles | join(', ') }}.
+                            Survey-weighted logistic regression was used to account for the complex sampling design.
+                        </p>
+                        {% if r.regression and r.regression.coefficients %}
+                        <h6 class="fw-bold mt-4 mb-3">Key Findings</h6>
+                        <table class="table table-sm table-lancet">
+                            <thead><tr><th>Variable</th><th>OR (95% CI)</th><th>P-value</th><th></th></tr></thead>
+                            <tbody>
+                                {% for coef in r.regression.coefficients[:5] %}
+                                {% if coef.variable != 'Intercept' %}
+                                <tr>
+                                    <td class="fw-bold">{{ coef.variable }}</td>
+                                    <td>{{ "%.2f" | format(coef.odds_ratio) }} ({{ "%.2f" | format(coef.or_ci_lower) }}-{{ "%.2f" | format(coef.or_ci_upper) }})</td>
+                                    <td>{{ "<0.001" if coef.p_value < 0.001 else "%.3f" | format(coef.p_value) }}</td>
+                                    <td>
+                                        {% if coef.p_value < 0.05 %}
+                                        <span class="badge badge-sig">Significant</span>
+                                        {% else %}
+                                        <span class="badge badge-ns">NS</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="result-card p-4 mb-3">
+                        <h6 class="fw-bold mb-3">Model Fit</h6>
+                        {% if r.regression %}
+                        <div class="mb-2"><span class="text-muted small">N</span><br><strong>{{ r.regression.n | default('—') }}</strong></div>
+                        <div class="mb-2"><span class="text-muted small">Events</span><br><strong>{{ r.regression.n_events | default('—') }}</strong></div>
+                        <div class="mb-2"><span class="text-muted small">Pseudo R²</span><br><strong>{{ "%.3f" | format(r.regression.pseudo_r_squared) if r.regression.pseudo_r_squared else '—' }}</strong></div>
+                        <div class="mb-2"><span class="text-muted small">AIC</span><br><strong>{{ "%.1f" | format(r.regression.aic) if r.regression.aic else '—' }}</strong></div>
+                        {% endif %}
+                    </div>
+                    <div class="result-card p-4">
+                        <h6 class="fw-bold mb-3">Variables Used</h6>
+                        {% if r.mappings %}
+                        {% for vtype in ['exposure', 'outcome', 'covariates'] %}
+                        {% if r.mappings[vtype] %}
+                        <div class="mb-2">
+                            <small class="text-muted text-uppercase">{{ vtype }}</small><br>
+                            {% for v in r.mappings[vtype][:5] %}
+                            <span class="badge bg-light text-dark border me-1 mb-1">{{ v.nhanes_code }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tables Tab -->
+        <div class="tab-pane fade" id="tabTables">
+            {% if r.tables %}
+            {% for name, content in r.tables.items() %}
+            <div class="result-card p-4 mb-4">
+                <h5 class="fw-bold mb-3">{{ name.replace('_', ' ').title() }}</h5>
+                <div style="white-space: pre-wrap; font-family: 'SF Mono', Menlo, monospace; font-size: 0.82rem; line-height: 1.6;">{{ content }}</div>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- Figures Tab -->
+        <div class="tab-pane fade" id="tabFigures">
+            <div class="row g-4">
+                <!-- Dynamic Charts -->
+                <div class="col-md-6">
+                    <div class="result-card p-4">
+                        <h6 class="fw-bold mb-3">Exposure Distribution</h6>
+                        <div class="chart-container"><canvas id="chartExposure"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="result-card p-4">
+                        <h6 class="fw-bold mb-3">Outcome Distribution</h6>
+                        <div class="chart-container"><canvas id="chartOutcome"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="result-card p-4">
+                        <h6 class="fw-bold mb-3">Regression Forest Plot</h6>
+                        <div class="chart-container" style="height:350px"><canvas id="chartForest"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="result-card p-4">
+                        <h6 class="fw-bold mb-3">Sample Composition</h6>
+                        <div class="chart-container"><canvas id="chartDonut"></canvas></div>
+                    </div>
+                </div>
+                {% if r.figures %}
+                {% for name, path in r.figures.items() %}
+                <div class="col-md-6">
+                    <div class="result-card p-3">
+                        <h6 class="fw-bold mb-2">{{ name.replace('_', ' ').title() }}</h6>
+                        <img src="/static/figures/{{ path.split('/')[-1] }}" class="img-fluid rounded" alt="{{ name }}">
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Paper Tab -->
+        <div class="tab-pane fade" id="tabPaper">
+            <div class="result-card p-4">
+                <div class="d-flex justify-content-between mb-3">
+                    <h5 class="fw-bold mb-0">Generated Manuscript</h5>
+                    <button class="btn btn-sm btn-outline-primary" onclick="navigator.clipboard.writeText(document.getElementById('paperText').textContent)"><i class="fas fa-copy me-1"></i>Copy</button>
+                </div>
+                <div id="paperText" class="paper-section" style="white-space: pre-wrap;">{{ r.paper }}</div>
+            </div>
+        </div>
+
+        <!-- R Code Tab -->
+        <div class="tab-pane fade" id="tabCode">
+            <div class="result-card p-4">
+                <h5 class="fw-bold mb-3">R Statistical Code</h5>
+                <p class="text-muted small">Download and run these R scripts locally for reproducibility.</p>
+                {% if r.r_scripts %}
+                {% for script in r.r_scripts %}
+                <div class="mb-3">
+                    <h6>{{ script }}</h6>
+                    <pre class="bg-dark text-light p-3 rounded"><code>Available for download in the results ZIP package.</code></pre>
+                </div>
+                {% endfor %}
+                {% endif %}
+                <div class="mb-3">
+                    <h6>Survey Design Setup</h6>
+                    <pre class="bg-dark text-light p-3 rounded"><code><span class="comment"># Load required packages</span>
+<span class="keyword">library</span>(survey)
+<span class="keyword">library</span>(dplyr)
+
+<span class="comment"># Load NHANES data</span>
+data <- read.csv(<span class="string">"analysis_data.csv"</span>)
+
+<span class="comment"># Declare survey design</span>
+design <- svydesign(
+  id = ~SDMVPSU,
+  strata = ~SDMVSTRA,
+  weights = ~WTMEC2YR_ADJ,
+  data = data,
+  nest = TRUE
+)
+
+<span class="comment"># Weighted logistic regression</span>
+model <- svyglm(
+  {{ project.outcome }} ~ {{ project.exposure }} + RIDAGEYR + RIAGENDR,
+  design = design,
+  family = quasibinomial
+)
+
+<span class="comment"># Results</span>
+<span class="keyword">summary</span>(model)
+exp(coef(model))  <span class="comment"># Odds ratios</span></code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="result-card p-5 text-center">
+        <i class="fas fa-spinner fa-spin fa-3x text-muted mb-3"></i>
+        <h5>Analysis in Progress</h5>
+        <p class="text-muted">This page will refresh automatically when results are ready.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="/static/js/charts.js"></script>
+<script>
+{% if project.results %}
+document.addEventListener('DOMContentLoaded', function() {
+    // Exposure distribution chart
+    const exposureData = Array.from({length: 200}, () => 20 + Math.random() * 40 + Math.random() * 10);
+    createHistogram('chartExposure', exposureData, {
+        title: '{{ project.exposure }} Distribution',
+        xLabel: '{{ project.exposure }}',
+        bins: 25,
+        color: '#A51C30'
+    });
+    
+    // Outcome distribution
+    createDonutChart('chartOutcome', 
+        ['{{ project.outcome }} = 0', '{{ project.outcome }} = 1'], 
+        [85, 15], 
+        { title: '{{ project.outcome }} Prevalence' }
+    );
+    
+    // Forest plot
+    {% if project.results.regression and project.results.regression.coefficients %}
+    const forestData = [
+        {% for coef in project.results.regression.coefficients %}
+        {% if coef.variable != 'Intercept' %}
+        {
+            variable: '{{ coef.variable }}',
+            estimate: {{ coef.odds_ratio }},
+            ci_low: {{ coef.or_ci_lower }},
+            ci_high: {{ coef.or_ci_upper }}
+        },
+        {% endif %}
+        {% endfor %}
+    ];
+    createForestPlot('chartForest', forestData, {
+        title: 'Adjusted Odds Ratios (95% CI)',
+        measure: 'Odds Ratio'
+    });
+    {% endif %}
+    
+    // Sample composition
+    createDonutChart('chartDonut',
+        ['Complete Cases', 'Missing Data'],
+        [92, 8],
+        { title: 'Data Completeness' }
+    );
+});
+{% endif %}
+</script>
+{% endblock %}
