@@ -1,168 +1,156 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NHANES to Lancet - MoKangMedical</title>
-    <meta name="description" content="NHANES数据到Lancet论文的转化工具">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --primary: #6366f1;
-            --dark: #0f172a;
-            --darker: #020617;
-            --light: #f8fafc;
-            --gray: #64748b;
-            --border: #1e293b;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--darker);
-            color: var(--light);
-            line-height: 1.6;
-        }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            background: linear-gradient(135deg, var(--darker) 0%, #1e1b4b 50%, var(--darker) 100%);
-        }
-        .hero h1 {
-            font-size: clamp(2.5rem, 6vw, 4rem);
-            font-weight: 800;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, #fff 0%, #6366f1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .hero p {
-            font-size: 1.25rem;
-            color: var(--gray);
-            max-width: 600px;
-            margin: 0 auto 40px;
-        }
-        .btn {
-            padding: 14px 32px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 16px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        .btn-secondary {
-            background: transparent;
-            color: var(--light);
-            border: 2px solid var(--border);
-        }
-        .features {
-            padding: 100px 0;
-            background: var(--dark);
-        }
-        .section-title {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-        .section-title h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-        }
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 24px;
-        }
-        .feature-card {
-            background: var(--darker);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 32px;
-            transition: all 0.3s ease;
-        }
-        .feature-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-4px);
-        }
-        .feature-card h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--primary);
-        }
-        .feature-card p {
-            color: var(--gray);
-            font-size: 14px;
-        }
-        .cta {
-            padding: 100px 0;
-            background: linear-gradient(135deg, #6366f1 0%, #7c3aed 100%);
-            text-align: center;
-        }
-        .cta h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-        }
-        footer {
-            padding: 40px 0;
-            background: var(--darker);
-            border-top: 1px solid var(--border);
-            text-align: center;
-            color: var(--gray);
-            font-size: 14px;
-        }
-        footer a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>NHANES to Lancet - MoKangMedical</title>
+<meta name="description" content="Automated NHANES data extraction, analysis, and manuscript preparation.">
+<meta property="og:title" content="NHANES to Lancet - MoKangMedical">
+<meta property="og:description" content="Automated NHANES data extraction, analysis, and manuscript preparation.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mokangmedical.github.io/nhanes-to-lancet/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1f3e5;</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p:#ef4444;--bg:#0a0a0f;--s:#12121a;--t:#e2e8f0;--m:#94a3b8;--b:rgba(255,255,255,.06);--card:#141b2d;--text:#e2e8f0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--t);line-height:1.6}
+a{color:var(--p);text-decoration:none}
+.nav{position:fixed;top:0;left:0;right:0;background:rgba(10,10,15,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--b);z-index:1000;padding:.8rem 2rem;display:flex;align-items:center;justify-content:space-between}
+.nb{font-size:1.2rem;font-weight:700;color:var(--p)}
+.nl{display:flex;gap:1.5rem;align-items:center}
+.nl a{color:var(--m);font-size:.85rem;transition:color .2s}
+.nl a:hover{color:var(--t)}
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,#ef444415,transparent 70%)}
+.hc{position:relative;max-width:800px}
+.hero h1{font-size:clamp(2.5rem,6vw,4.5rem);font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,#fff,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem}
+.sub{font-size:1.3rem;color:var(--m);margin-bottom:2rem}
+.cat{display:inline-block;padding:.4rem 1rem;background:#ef444422;border:1px solid #ef444444;border-radius:999px;font-size:.8rem;color:var(--p);margin-bottom:2rem}
+.btn{display:inline-block;padding:.8rem 2rem;background:var(--p);color:#fff;border-radius:8px;font-weight:600;transition:all .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px #ef444440}
+.bo{display:inline-block;padding:.6rem 1.5rem;border:1px solid var(--p);color:var(--p);border-radius:8px;font-weight:500;transition:all .2s}
+.bo:hover{background:var(--p);color:#fff}
+.sec{padding:5rem 2rem;max-width:1200px;margin:0 auto}
+.st{text-align:center;font-size:2.2rem;font-weight:700;margin-bottom:.5rem}
+.ss{text-align:center;color:var(--m);margin-bottom:3rem}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem}
+.fc{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:2rem;transition:all .3s}
+.fc:hover{border-color:#ef444440;transform:translateY(-4px)}
+.fi{width:40px;height:40px;background:#ef444420;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:1rem}
+.fc h3{font-size:1.1rem;margin-bottom:.5rem}
+.fc p{color:var(--m);font-size:.9rem}
+.pg{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;margin-top:2rem}
+.pc{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:2rem;text-align:center;transition:all .3s}
+.pc:hover{border-color:#ef444440}
+.pr{font-size:2.5rem;font-weight:800;color:var(--p);margin:1rem 0}
+.pc p{color:var(--m);margin-bottom:1.5rem}
+.cta{text-align:center;padding:5rem 2rem;background:linear-gradient(135deg,#ef444410,transparent)}
+footer{text-align:center;padding:2rem;color:var(--m);font-size:.8rem;border-top:1px solid var(--b)}
+footer a{color:var(--m)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin:3rem 0}
+.stat{text-align:center}
+.stat .num{font-size:2.5rem;font-weight:800;color:var(--p)}
+.stat .lbl{color:var(--m);font-size:.85rem}
+@media(max-width:768px){.nl{display:none}.fg,.pg{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
 </head>
 <body>
-    <section class="hero">
-        <div class="container">
-            <h1>NHANES to Lancet</h1>
-            <p>NHANES数据到Lancet论文的转化工具</p>
-            <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
-                <a href="#features" class="btn btn-primary">了解功能</a>
-                <a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn btn-secondary">GitHub</a>
+<nav class="nav">
+<a href="https://mokangmedical.github.io/opc-homepage/" class="nb">MoKangMedical</a>
+<div class="nl">
+<a href="#features">Features</a>
+<a href="#pricing">Pricing</a>
+<a href="https://github.com/MoKangMedical/nhanes-to-lancet">GitHub</a>
+<a href="https://mokangmedical.github.io/opc-homepage/">Ecosystem</a>
+</div>
+</nav>
+<section class="hero">
+<div class="hc">
+<span class="cat">Epidemiology</span>
+<h1>NHANES to Lancet</h1>
+<p class="sub">NHANES Data Analysis Pipeline</p>
+<div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+<a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn">View on GitHub</a>
+<a href="#features" class="bo">Explore Features</a>
+</div>
+</div>
+</section>
+<section class="sec" id="features">
+<h2 class="st">Capabilities</h2>
+<p class="ss">Automated NHANES data extraction, analysis, and manuscript preparation.</p>
+<div class="fg"><div class="fc"><div class="fi">◆</div><h3>Auto Data Download</h3><p>Advanced auto data download capabilities powered by AI</p></div><div class="fc"><div class="fi">◇</div><h3>Survey Analysis</h3><p>Advanced survey analysis capabilities powered by AI</p></div><div class="fc"><div class="fi">◈</div><h3>Weighted Stats</h3><p>Advanced weighted stats capabilities powered by AI</p></div><div class="fc"><div class="fi">◉</div><h3>Figure Generation</h3><p>Advanced figure generation capabilities powered by AI</p></div><div class="fc"><div class="fi">◊</div><h3>Manuscript Draft</h3><p>Advanced manuscript draft capabilities powered by AI</p></div><div class="fc"><div class="fi">○</div><h3>STROBE Compliance</h3><p>Advanced strobe compliance capabilities powered by AI</p></div>
+</div>
+</section>
+<section class="sec" id="pricing">
+<h2 class="st">Pricing</h2>
+<p class="ss">Flexible plans for every scale</p>
+<div class="pg">
+<div class="pc"><h3>Starter</h3><div class="pr">Free</div><p>Basic features and community support</p><a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="bo">Get Started</a></div>
+<div class="pc"><h3>Professional</h3><div class="pr">$299/mo</div><p>Full access with priority support</p><a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="bo">Start Trial</a></div>
+<div class="pc"><h3>Enterprise</h3><div class="pr">Custom</div><p>Custom deployment with SLA</p><a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="bo">Contact Sales</a></div>
+</div>
+</section>
+<section class="cta">
+<h2>Ready to get started?</h2>
+<p style="color:var(--m);margin-bottom:2rem">Join leading organizations using NHANES to Lancet</p>
+<a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn">Get Started Free</a>
+</section>
+    <section id="pricing" style="padding:100px 0;background:#0a0e1a">
+        <div style="max-width:1200px;margin:0 auto;padding:0 24px">
+            <div style="text-align:center;margin-bottom:60px">
+                <h2 style="font-size:2.5rem;font-weight:700;margin-bottom:16px;color:#fff">Pricing</h2>
+                <p style="font-size:1.1rem;color:#94a3b8;max-width:560px;margin:0 auto">Choose the plan that accelerates your epidemiological research</p>
             </div>
-        </div>
-    </section>
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-title">
-                <h2>核心功能</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;max-width:1000px;margin:0 auto">
+                <div style="background:#111827;border:1px solid #1e293b;border-radius:16px;padding:40px 32px">
+                    <h3 style="font-size:1.1rem;font-weight:600;color:#94a3b8;margin-bottom:8px">Starter</h3>
+                    <div style="font-size:2.5rem;font-weight:800;color:#fff;margin-bottom:4px">$0<span style="font-size:1rem;color:#64748b;font-weight:400">/mo</span></div>
+                    <p style="color:#64748b;font-size:14px;margin-bottom:24px">Perfect for individual researchers</p>
+                    <ul style="list-style:none;padding:0;margin:0 0 32px">
+                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> 1 NHANES cycle</li>
+                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> Basic regression analysis</li>
+                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> Table 1 generation</li>
+                    </ul>
+                    <a href="https://github.com/MoKangMedical/nhanes-to-lancet" style="display:block;text-align:center;padding:12px 24px;border-radius:10px;font-weight:600;font-size:14px;text-decoration:none;color:#fff;background:transparent;border:1px solid #1e293b">Get Started Free</a>
+                </div>
+                <div style="background:#111827;border:2px solid #dc2626;border-radius:16px;padding:40px 32px;position:relative;transform:scale(1.02)">
+                    <div style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;padding:4px 16px;border-radius:20px;font-size:12px;font-weight:600">Most Popular</div>
+                    <h3 style="font-size:1.1rem;font-weight:600;color:#ef4444;margin-bottom:8px">Professional</h3>
+                    <div style="font-size:2.5rem;font-weight:800;color:#fff;margin-bottom:4px">$59<span style="font-size:1rem;color:#64748b;font-weight:400">/mo</span></div>
+                    <p style="color:#64748b;font-size:14px;margin-bottom:24px">For research teams and labs</p>
+                    <ul style="list-style:none;padding:0;margin:0 0 32px">
+                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> All 10 NHANES cycles</li>
+                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> Survey-weighted analysis</li>
+                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> AI paper writing &amp; forest plots</li>
+                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> Priority email support</li>
+                    </ul>
+                    <a href="https://github.com/MoKangMedical/nhanes-to-lancet" style="display:block;text-align:center;padding:12px 24px;border-radius:10px;font-weight:600;font-size:14px;text-decoration:none;color:#fff;background:#dc2626;border:none">Get Started</a>
+                </div>
+                <div style="background:#111827;border:1px solid #1e293b;border-radius:16px;padding:40px 32px">
+                    <h3 style="font-size:1.1rem;font-weight:600;color:#94a3b8;margin-bottom:8px">Enterprise</h3>
+                    <div style="font-size:2.5rem;font-weight:800;color:#fff;margin-bottom:4px">$199<span style="font-size:1rem;color:#64748b;font-weight:400">/mo</span></div>
+                    <p style="color:#64748b;font-size:14px;margin-bottom:24px">For institutions and CROs</p>
+                    <ul style="list-style:none;padding:0;margin:0 0 32px">
+                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> All Professional features</li>
+                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;14px;gap:8px"><span style="color:#dc2626">&#10003;</span> Custom variable mapping</li>
+                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> Multi-study batch processing</li>
+                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> Dedicated account manager</li>
+                        <li style="color:#cbd5e1;font-size:14px;padding:6px 0;display:flex;align-items:center;gap:8px"><span style="color:#dc2626">&#10003;</span> SLA guarantee</li>
+                    </ul>
+                    <a href="https://github.com/MoKangMedical/nhanes-to-lancet" style="display:block;text-align:center;padding:12px 24px;border-radius:10px;font-weight:600;font-size:14px;text-decoration:none;color:#fff;background:transparent;border:1px solid #1e293b">Contact Sales</a>
+                </div>
             </div>
-            <div class="features-grid">
-                <div class="feature-card"><h3>数据下载</h3><p>专业的数据下载能力，助力医学研究</p></div><div class="feature-card"><h3>变量选择</h3><p>专业的变量选择能力，助力医学研究</p></div><div class="feature-card"><h3>统计分析</h3><p>专业的统计分析能力，助力医学研究</p></div><div class="feature-card"><h3>图表制作</h3><p>专业的图表制作能力，助力医学研究</p></div><div class="feature-card"><h3>论文模板</h3><p>专业的论文模板能力，助力医学研究</p></div><div class="feature-card"><h3>投稿助手</h3><p>专业的投稿助手能力，助力医学研究</p></div>
-            </div>
-        </div>
-    </section>
-    <section class="cta">
-        <div class="container">
-            <h2>开始使用 NHANES to Lancet</h2>
-            <p>加入MoKangMedical生态，探索AI医疗的无限可能</p>
-            <a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn" style="background:white;color:var(--primary)">立即开始</a>
         </div>
     </section>
     <footer>
-        <div class="container">
-            <p>&copy; 2026 MoKangMedical. All rights reserved. | <a href="https://mokangmedical.github.io/opc-homepage/">生态首页</a></p>
-        </div>
-    </footer>
+<p>&copy; 2025 MoKangMedical. All rights reserved. | <a href="https://mokangmedical.github.io/opc-homepage/">Ecosystem</a> | <a href="https://github.com/MoKangMedical">GitHub</a></p>
+</footer>
+<script>
+// Scroll reveal animation
+const obs=new IntersectionObserver(e=>{e.forEach(i=>{if(i.isIntersecting){i.target.style.opacity='1';i.target.style.transform='translateY(0)';obs.unobserve(i.target)}})},{threshold:.1});
+document.querySelectorAll('.fc,.pc').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(20px)';el.style.transition='all 0.6s ease';obs.observe(el)});
+// Counter animation
+document.querySelectorAll('.stat .num').forEach(el=>{const t=parseInt(el.dataset.val||0);let c=0;const s=t/60;const tm=setInterval(()=>{c+=s;if(c>=t){c=t;clearInterval(tm)}el.textContent=Math.floor(c).toLocaleString()},25)});
+</script>
 </body>
 </html>
