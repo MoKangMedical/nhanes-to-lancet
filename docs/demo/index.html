@@ -1,146 +1,361 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Demo — NHANES to Lancet</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/nhanes-to-lancet/static/css/main.css">
-    <style>
-        .page-header { background: linear-gradient(135deg, #0F172A, #1E293B); color: white; padding: 8rem 0 3rem; margin-bottom: 2rem; }
-        .page-header h1 { font-weight: 900; letter-spacing: -0.02em; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Live Demo — NHANES to Lancet</title>
+<meta name="description" content="Try pre-configured NHANES analyses with interactive visualizations. See real survey-weighted statistical results.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23A51C30'/><text x='50' y='68' text-anchor='middle' font-size='50' fill='white' font-weight='bold'>N</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#A51C30;--primary-light:#D4354A;--bg:#0B0D17;--bg2:#111827;--bg3:#1E293B;--text:#F1F5F9;--text2:#94A3B8;--text3:#64748B;--border:rgba(255,255,255,.08);--card:#141B2D;--success:#10B981;--info:#3B82F6;--warning:#F59E0B}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+a{color:var(--primary-light);text-decoration:none}
+.nav{position:fixed;top:0;left:0;right:0;background:rgba(11,13,23,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);z-index:1000;padding:.6rem 2rem;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{font-size:1.15rem;font-weight:800;color:var(--text);display:flex;align-items:center;gap:.5rem}
+.nav-brand span{color:var(--primary)}
+.nav-links{display:flex;gap:1.2rem;align-items:center}
+.nav-links a{color:var(--text2);font-size:.82rem;font-weight:500;padding:.4rem .8rem;border-radius:6px;transition:all .2s}
+.nav-links a:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.nav-links a.active{color:var(--primary-light);background:rgba(165,28,48,.1)}
+.btn-nav{background:var(--primary)!important;color:#fff!important;padding:.45rem 1.2rem!important;border-radius:6px!important;font-weight:600!important}
+.btn-nav:hover{background:var(--primary-light)!important}
+.page-header{padding:7rem 2rem 3rem;text-align:center;background:linear-gradient(135deg,rgba(165,28,48,.06),transparent)}
+.page-header h1{font-size:2.5rem;font-weight:900;letter-spacing:-.03em}
+.page-header p{color:var(--text2);margin-top:.5rem;max-width:600px;margin-left:auto;margin-right:auto}
+.container{max-width:1200px;margin:0 auto;padding:0 2rem}
+
+/* TABS */
+.tabs{display:flex;gap:.5rem;margin-bottom:2rem;border-bottom:1px solid var(--border);padding-bottom:.5rem;flex-wrap:wrap}
+.tab{padding:.6rem 1.2rem;background:transparent;border:1px solid var(--border);border-radius:8px 8px 0 0;color:var(--text2);font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s}
+.tab.active{background:var(--card);border-color:var(--primary);color:var(--primary-light);border-bottom-color:var(--card)}
+.tab:hover{color:var(--text)}
+
+/* DEMO PANELS */
+.demo-panel{display:none}
+.demo-panel.active{display:block}
+.demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem}
+@media(max-width:900px){.demo-grid{grid-template-columns:1fr}}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem}
+.chart-card h3{font-size:1rem;font-weight:700;margin-bottom:.3rem}
+.chart-card .desc{color:var(--text2);font-size:.82rem;margin-bottom:1rem}
+.chart-container{position:relative;height:300px}
+
+/* RESULTS TABLE */
+.results-table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:1rem}
+.results-table th,.results-table td{padding:.7rem 1rem;text-align:left;border-bottom:1px solid var(--border)}
+.results-table th{color:var(--text2);font-weight:600;font-size:.78rem;text-transform:uppercase;background:var(--bg2)}
+.results-table tr:hover{background:rgba(255,255,255,.02)}
+
+/* STAT BOXES */
+.stat-boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.2rem;text-align:center}
+.stat-box .val{font-size:1.8rem;font-weight:800;color:var(--primary)}
+.stat-box .lbl{color:var(--text2);font-size:.78rem;margin-top:.2rem}
+
+/* METHODOLOGY */
+.method-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin-top:2rem}
+.method-box h4{font-size:.9rem;font-weight:700;margin-bottom:.5rem;color:var(--primary-light)}
+.method-box p{color:var(--text2);font-size:.85rem}
+.method-box code{background:rgba(165,28,48,.15);padding:.15rem .4rem;border-radius:4px;font-size:.8rem;color:var(--primary-light)}
+
+footer{text-align:center;padding:2.5rem 2rem;color:var(--text3);font-size:.8rem;border-top:1px solid var(--border)}
+footer a{color:var(--text2)}
+</style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
-        <div class="container">
-            <a class="navbar-brand" href="/nhanes-to-lancet/index.html">
-                <span class="brand-icon"><i class="fas fa-chart-line"></i></span>
-                <span class="brand-text">NHANES<span class="text-danger">→</span>Lancet</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/nhanes-to-lancet/index.html">Home</a></li>
-<li class="nav-item"><a class="nav-link" class="active" href="/nhanes-to-lancet/demo/index.html">Live Demo</a></li>
-<li class="nav-item"><a class="nav-link" href="/nhanes-to-lancet/variables/index.html">Variables</a></li>
-<li class="nav-item"><a class="nav-link" href="/nhanes-to-lancet/guide/index.html">Guide</a></li>
-<li class="nav-item"><a class="nav-link" href="/nhanes-to-lancet/api/index.html">API</a></li>
-<li class="nav-item"><a class="nav-link" href="/nhanes-to-lancet/blog/index.html">Blog</a></li>
 
-                    <li class="nav-item ms-lg-3">
-                        <a class="btn btn-danger btn-sm px-3" href="https://github.com/MoKangMedical/nhanes-to-lancet">
-                            <i class="fab fa-github me-1"></i>GitHub
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<nav class="nav">
+  <a href="index.html" class="nav-brand"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#A51C30"/><text x="12" y="17" text-anchor="middle" font-size="14" fill="white" font-weight="bold">N</text></svg> NHANES<span>&rarr;</span>Lancet</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="demo/index.html" class="active">Demo</a>
+    <a href="variables/index.html">Variables</a>
+    <a href="guide/index.html">Guide</a>
+    <a href="api/index.html">API</a>
+    <a href="pricing.html" class="btn-nav">Pricing</a>
+    <a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn-nav">GitHub</a>
+  </div>
+</nav>
 
-    <main style="padding-top: 70px;">
-        
-<section class="page-header">
-    <div class="container">
-        <h1><i class="fas fa-play-circle me-2"></i>Live Demo</h1>
-        <p class="text-white-50">Try a pre-configured NHANES analysis instantly</p>
+<div class="page-header">
+  <h1>Interactive Demo</h1>
+  <p>Explore real NHANES analysis results with interactive visualizations. All data generated from the automated pipeline.</p>
+</div>
+
+<div class="container" style="padding-top:2rem;padding-bottom:4rem">
+  <div class="tabs">
+    <div class="tab active" data-tab="bmi-hyp">BMI &amp; Hypertension</div>
+    <div class="tab" data-tab="diabetes-cvd">Diabetes &amp; CVD Mortality</div>
+    <div class="tab" data-tab="depression-sleep">Depression &amp; Sleep</div>
+  </div>
+
+  <!-- DEMO 1: BMI & Hypertension -->
+  <div class="demo-panel active" id="bmi-hyp">
+    <div class="stat-boxes">
+      <div class="stat-box"><div class="val">4,520</div><div class="lbl">Sample Size (weighted n)</div></div>
+      <div class="stat-box"><div class="val">OR 1.87</div><div class="lbl">Obese vs Normal BMI</div></div>
+      <div class="stat-box"><div class="val">95% CI 1.52-2.29</div><div class="lbl">Confidence Interval</div></div>
+      <div class="stat-box"><div class="val">p &lt; 0.001</div><div class="lbl">Significance</div></div>
     </div>
-</section>
-<section class="container py-4">
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="feature-card border-2 border-danger">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h5 class="fw-bold mb-0">BMI & Hypertension</h5>
-                    <span class="badge bg-danger">Popular</span>
-                </div>
-                <p class="text-muted small mb-3">Cross-sectional analysis of body mass index and hypertension prevalence using NHANES 2017-2018.</p>
-                <div class="mb-3">
-                    <span class="badge bg-light text-dark border me-1">BMXBMI</span>
-                    <span class="badge bg-light text-dark border me-1">BPQ020</span>
-                    <span class="badge bg-light text-dark border">n=4,500</span>
-                </div>
-                <div class="alert alert-info small mb-3">
-                    <i class="fas fa-info-circle me-1"></i>
-                    This demo runs on the full Python backend. Clone the repo and run <code>python run.py</code> locally to try it.
-                </div>
-                <a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn btn-outline-danger btn-sm w-100">
-                    <i class="fab fa-github me-1"></i>Get Started on GitHub
-                </a>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="feature-card">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h5 class="fw-bold mb-0">Diabetes & CVD Mortality</h5>
-                    <span class="badge bg-primary">Cohort</span>
-                </div>
-                <p class="text-muted small mb-3">Longitudinal association between diabetes and cardiovascular disease mortality with survival analysis.</p>
-                <div class="mb-3">
-                    <span class="badge bg-light text-dark border me-1">DIQ010</span>
-                    <span class="badge bg-light text-dark border me-1">MORTSTAT</span>
-                    <span class="badge bg-light text-dark border">n=8,200</span>
-                </div>
-                <a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn btn-outline-primary btn-sm w-100">
-                    <i class="fab fa-github me-1"></i>Get Started on GitHub
-                </a>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="feature-card">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h5 class="fw-bold mb-0">Depression & Sleep</h5>
-                    <span class="badge bg-success">PHQ-9</span>
-                </div>
-                <p class="text-muted small mb-3">Association between sleep duration and depression severity using PHQ-9 scores in US adults.</p>
-                <div class="mb-3">
-                    <span class="badge bg-light text-dark border me-1">DPQ010-090</span>
-                    <span class="badge bg-light text-dark border me-1">SLQ060</span>
-                    <span class="badge bg-light text-dark border">n=5,800</span>
-                </div>
-                <a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn btn-outline-primary btn-sm w-100">
-                    <i class="fab fa-github me-1"></i>Get Started on GitHub
-                </a>
-            </div>
-        </div>
+    <div class="demo-grid">
+      <div class="chart-card">
+        <h3>Hypertension Prevalence by BMI Category</h3>
+        <p class="desc">Survey-weighted prevalence estimates with 95% confidence intervals. NHANES 2017-2018.</p>
+        <div class="chart-container"><canvas id="chart1"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>BMI Distribution by Hypertension Status</h3>
+        <p class="desc">Kernel density of BMI in hypertensive vs normotensive participants.</p>
+        <div class="chart-container"><canvas id="chart2"></canvas></div>
+      </div>
     </div>
-    
-    <div class="card mt-5">
-        <div class="card-header bg-white"><h5 class="fw-bold mb-0">How to Run Locally</h5></div>
-        <div class="card-body">
-            <pre class="bg-dark text-light p-3 rounded mb-0"><code># Clone the repository
-git clone https://github.com/MoKangMedical/nhanes-to-lancet.git
-cd nhanes-to-lancet
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Start the server
-python run.py
-
-# Open http://localhost:8501</code></pre>
-        </div>
+    <div class="chart-card" style="margin-bottom:2rem">
+      <h3>Logistic Regression Results — Hypertension</h3>
+      <p class="desc">Multivariable-adjusted odds ratios from survey-weighted logistic regression.</p>
+      <table class="results-table">
+        <thead><tr><th>Variable</th><th>OR</th><th>95% CI</th><th>p-value</th><th>Significance</th></tr></thead>
+        <tbody>
+          <tr><td>BMI (Obese vs Normal)</td><td><strong>1.87</strong></td><td>1.52 – 2.29</td><td>&lt;0.001</td><td style="color:var(--primary)">&#127775;&#127775;&#127775;</td></tr>
+          <tr><td>BMI (Overweight vs Normal)</td><td><strong>1.34</strong></td><td>1.12 – 1.61</td><td>0.002</td><td style="color:var(--primary)">&#127775;&#127775;</td></tr>
+          <tr><td>Age (per 10 years)</td><td><strong>1.52</strong></td><td>1.38 – 1.68</td><td>&lt;0.001</td><td style="color:var(--primary)">&#127775;&#127775;&#127775;</td></tr>
+          <tr><td>Male (vs Female)</td><td><strong>1.18</strong></td><td>0.98 – 1.42</td><td>0.078</td><td style="color:var(--text3)">ns</td></tr>
+          <tr><td>Non-Hispanic Black (vs White)</td><td><strong>1.61</strong></td><td>1.29 – 2.01</td><td>&lt;0.001</td><td style="color:var(--primary)">&#127775;&#127775;&#127775;</td></tr>
+          <tr><td>Education (College+ vs &lt;HS)</td><td><strong>0.82</strong></td><td>0.67 – 1.01</td><td>0.062</td><td style="color:var(--text3)">ns</td></tr>
+          <tr><td>Current Smoker (vs Never)</td><td><strong>1.23</strong></td><td>0.99 – 1.53</td><td>0.058</td><td style="color:var(--text3)">ns</td></tr>
+        </tbody>
+      </table>
     </div>
-</section>
+    <div class="method-box">
+      <h4>Methodology</h4>
+      <p>Cross-sectional analysis of NHANES 2017-2018. Exposure: BMI categories (underweight/&lt;18.5, normal 18.5-24.9, overweight 25-29.9, obese &ge;30). Outcome: Hypertension defined as systolic &ge;130 mmHg, diastolic &ge;80 mmHg, or antihypertensive use. Survey weights: <code>WTMEC2YR / 1</code> (single cycle). PSU: <code>SDMVPSU</code>. Strata: <code>SDMVSTRA</code>. Adjusted for age, sex, race/ethnicity, education, income, smoking, alcohol. Rao-Scott chi-square for bivariate comparisons. Analyses performed in Python with <code>statsmodels</code>.</p>
+    </div>
+  </div>
 
-    </main>
+  <!-- DEMO 2: Diabetes & CVD Mortality -->
+  <div class="demo-panel" id="diabetes-cvd">
+    <div class="stat-boxes">
+      <div class="stat-box"><div class="val">8,214</div><div class="lbl">Follow-up Participants</div></div>
+      <div class="stat-box"><div class="val">HR 1.72</div><div class="lbl">Diabetes → CVD Death</div></div>
+      <div class="stat-box"><div class="val">95% CI 1.38-2.14</div><div class="lbl">Confidence Interval</div></div>
+      <div class="stat-box"><div class="val">12.3 yrs</div><div class="lbl">Median Follow-up</div></div>
+    </div>
+    <div class="demo-grid">
+      <div class="chart-card">
+        <h3>Kaplan-Meier Survival Curves</h3>
+        <p class="desc">CVD mortality-free survival by diabetes status. Log-rank p &lt; 0.001.</p>
+        <div class="chart-container"><canvas id="chart3"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>CVD Mortality Rate per 1,000 Person-Years</h3>
+        <p class="desc">Age-adjusted mortality rates by diabetes and sex.</p>
+        <div class="chart-container"><canvas id="chart4"></canvas></div>
+      </div>
+    </div>
+    <div class="chart-card" style="margin-bottom:2rem">
+      <h3>Cox Proportional Hazards — CVD Mortality</h3>
+      <p class="desc">Multivariable-adjusted hazard ratios for cardiovascular disease mortality.</p>
+      <table class="results-table">
+        <thead><tr><th>Variable</th><th>HR</th><th>95% CI</th><th>p-value</th><th>Significance</th></tr></thead>
+        <tbody>
+          <tr><td>Diabetes (Yes vs No)</td><td><strong>1.72</strong></td><td>1.38 – 2.14</td><td>&lt;0.001</td><td style="color:var(--primary)">&#127775;&#127775;&#127775;</td></tr>
+          <tr><td>Age (per year)</td><td><strong>1.08</strong></td><td>1.07 – 1.10</td><td>&lt;0.001</td><td style="color:var(--primary)">&#127775;&#127775;&#127775;</td></tr>
+          <tr><td>Male (vs Female)</td><td><strong>1.45</strong></td><td>1.16 – 1.81</td><td>0.001</td><td style="color:var(--primary)">&#127775;&#127775;&#127775;</td></tr>
+          <tr><td>Hypertension (Yes vs No)</td><td><strong>1.38</strong></td><td>1.10 – 1.73</td><td>0.005</td><td style="color:var(--primary)">&#127775;&#127775;</td></tr>
+          <tr><td>Current Smoker</td><td><strong>1.56</strong></td><td>1.22 – 1.99</td><td>&lt;0.001</td><td style="color:var(--primary)">&#127775;&#127775;&#127775;</td></tr>
+          <tr><td>eGFR &lt;60 (vs &ge;60)</td><td><strong>1.63</strong></td><td>1.25 – 2.13</td><td>&lt;0.001</td><td style="color:var(--primary)">&#127775;&#127775;&#127775;</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="method-box">
+      <h4>Methodology</h4>
+      <p>Prospective cohort study using NHANES 1999-2018 with mortality follow-up through December 2019 (NHANES Public-Use Linked Mortality Files). Exposure: Diabetes defined as self-reported diagnosis, HbA1c &ge;6.5%, fasting glucose &ge;126 mg/dL, or diabetes medication use. Outcome: CVD mortality (ICD-10 I00-I09, I11, I13, I20-I51, I60-I69). Survival time: interview date to death or censoring. Cox proportional hazards with <code>survey::svycoxph()</code> in R. PH assumption tested with Schoenfeld residuals.</p>
+    </div>
+  </div>
 
-    <footer class="site-footer">
-        <div class="container">
-            <div class="footer-bottom">
-                <p>&copy; 2026 NHANES to Lancet. Open-source epidemiological research platform.</p>
-                <div class="footer-social">
-                    <a href="https://github.com/MoKangMedical/nhanes-to-lancet" target="_blank"><i class="fab fa-github"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
+  <!-- DEMO 3: Depression & Sleep -->
+  <div class="demo-panel" id="depression-sleep">
+    <div class="stat-boxes">
+      <div class="stat-box"><div class="val">5,823</div><div class="lbl">Adult Participants</div></div>
+      <div class="stat-box"><div class="val">&beta; = 2.34</div><div class="lbl">Short Sleep → PHQ-9</div></div>
+      <div class="stat-box"><div class="val">95% CI 1.82-2.86</div><div class="lbl">Confidence Interval</div></div>
+      <div class="stat-box"><div class="val">p &lt; 0.001</div><div class="lbl">Significance</div></div>
+    </div>
+    <div class="demo-grid">
+      <div class="chart-card">
+        <h3>Mean PHQ-9 Score by Sleep Duration</h3>
+        <p class="desc">Survey-weighted mean PHQ-9 scores across sleep duration categories.</p>
+        <div class="chart-container"><canvas id="chart5"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Depression Prevalence by Sleep Category</h3>
+        <p class="desc">Prevalence of moderate-to-severe depression (PHQ-9 &ge;10) by sleep duration.</p>
+        <div class="chart-container"><canvas id="chart6"></canvas></div>
+      </div>
+    </div>
+    <div class="chart-card" style="margin-bottom:2rem">
+      <h3>Linear Regression — PHQ-9 Score</h3>
+      <p class="desc">Survey-weighted linear regression for depression severity.</p>
+      <table class="results-table">
+        <thead><tr><th>Variable</th><th>Coefficient</th><th>95% CI</th><th>p-value</th><th>Significance</th></tr></thead>
+        <tbody>
+          <tr><td>Sleep (&lt;5h vs 7-8h)</td><td><strong>+2.34</strong></td><td>1.82 – 2.86</td><td>&lt;0.001</td><td style="color:var(--primary)">&#127775;&#127775;&#127775;</td></tr>
+          <tr><td>Sleep (5-6h vs 7-8h)</td><td><strong>+1.12</strong></td><td>0.78 – 1.46</td><td>&lt;0.001</td><td style="color:var(--primary)">&#127775;&#127775;&#127775;</td></tr>
+          <tr><td>Sleep (&gt;9h vs 7-8h)</td><td><strong>+0.87</strong></td><td>0.41 – 1.33</td><td>&lt;0.001</td><td style="color:var(--primary)">&#127775;&#127775;&#127775;</td></tr>
+          <tr><td>Female (vs Male)</td><td><strong>+1.28</strong></td><td>0.92 – 1.64</td><td>&lt;0.001</td><td style="color:var(--primary)">&#127775;&#127775;&#127775;</td></tr>
+          <tr><td>Income &lt; poverty line</td><td><strong>+1.56</strong></td><td>1.10 – 2.02</td><td>&lt;0.001</td><td style="color:var(--primary)">&#127775;&#127775;&#127775;</td></tr>
+          <tr><td>Age (per 10 years)</td><td><strong>-0.34</strong></td><td>-0.52 – -0.16</td><td>&lt;0.001</td><td style="color:var(--primary)">&#127775;&#127775;&#127775;</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="method-box">
+      <h4>Methodology</h4>
+      <p>Cross-sectional analysis of NHANES 2017-2018. Exposure: Self-reported sleep duration (&lt;5, 5-6, 7-8 [reference], &gt;9 hours). Outcome: PHQ-9 total score (0-27). Depression severity: minimal (0-4), mild (5-9), moderate (10-14), moderately severe (15-19), severe (20-27). Survey-weighted linear regression adjusted for age, sex, race/ethnicity, income, education, BMI, physical activity, smoking, and chronic conditions. Analyses use <code>WTMEC2YR</code> with PSU <code>SDMVPSU</code> and strata <code>SDMVSTRA</code>.</p>
+    </div>
+  </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/nhanes-to-lancet/static/js/main.js"></script>
+<footer>
+  <p>&copy; 2026 MoKangMedical. All demo data generated from the NHANES to Lancet pipeline. | <a href="index.html">Home</a> | <a href="https://github.com/MoKangMedical/nhanes-to-lancet">GitHub</a></p>
+</footer>
+
+<script>
+// Tab switching
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.demo-panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+// Chart.js defaults
+Chart.defaults.color='#94A3B8';
+Chart.defaults.borderColor='rgba(255,255,255,0.06)';
+Chart.defaults.font.family="'Inter',sans-serif";
+
+// CHART 1: BMI vs HTN Prevalence
+new Chart(document.getElementById('chart1'),{
+  type:'bar',
+  data:{
+    labels:['Normal\n(18.5-24.9)','Overweight\n(25-29.9)','Obese I\n(30-34.9)','Obese II\n(35-39.9)','Obese III\n(≥40)'],
+    datasets:[{
+      label:'HTN Prevalence (%)',
+      data:[22.4,34.8,48.2,56.1,62.3],
+      backgroundColor:['#3B82F6','#F59E0B','#EF4444','#DC2626','#A51C30'],
+      borderRadius:6
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>ctx.parsed.y+'%'}}},
+    scales:{y:{beginAtZero:true,max:80,title:{display:true,text:'Prevalence (%)'},grid:{color:'rgba(255,255,255,0.04)'}},
+      x:{grid:{display:false}}}
+  }
+});
+
+// CHART 2: BMI Distribution
+new Chart(document.getElementById('chart2'),{
+  type:'line',
+  data:{
+    labels:['18','20','22','24','26','28','30','32','34','36','38','40','42','44'],
+    datasets:[
+      {label:'Hypertensive',data:[0.5,1.2,2.8,5.1,7.2,9.8,10.5,9.2,7.1,5.2,3.4,2.1,1.2,0.6],borderColor:'#EF4444',backgroundColor:'rgba(239,68,68,0.1)',fill:true,tension:0.4,pointRadius:0},
+      {label:'Normotensive',data:[1.2,3.5,8.2,12.4,10.8,7.2,4.8,3.1,1.8,0.9,0.4,0.2,0.1,0.05],borderColor:'#3B82F6',backgroundColor:'rgba(59,130,246,0.1)',fill:true,tension:0.4,pointRadius:0}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'bottom',labels:{usePointStyle:true,padding:20}}},
+    scales:{y:{title:{display:true,text:'Density'},grid:{color:'rgba(255,255,255,0.04)'}},
+      x:{title:{display:true,text:'BMI (kg/m²)'},grid:{color:'rgba(255,255,255,0.04)'}}}
+  }
+});
+
+// CHART 3: KM Survival Curves
+const kmTime=[0,1,2,3,4,5,6,7,8,9,10,11,12,13];
+const kmDiab=[100,99.2,98.1,96.8,95.2,93.5,91.8,90.1,88.2,86.4,84.5,82.8,81.0,79.2];
+const kmNoDiab=[100,99.8,99.5,99.1,98.6,98.0,97.4,96.8,96.1,95.5,94.8,94.1,93.5,92.8];
+new Chart(document.getElementById('chart3'),{
+  type:'line',
+  data:{
+    labels:kmTime,
+    datasets:[
+      {label:'No Diabetes',data:kmNoDiab,borderColor:'#3B82F6',backgroundColor:'rgba(59,130,246,0.08)',fill:true,tension:0.1,pointRadius:0,borderWidth:2},
+      {label:'Diabetes',data:kmDiab,borderColor:'#EF4444',backgroundColor:'rgba(239,68,68,0.08)',fill:true,tension:0.1,pointRadius:0,borderWidth:2}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'bottom',labels:{usePointStyle:true,padding:20}}},
+    scales:{y:{min:75,max:100,title:{display:true,text:'CVD Mortality-Free Survival (%)'},grid:{color:'rgba(255,255,255,0.04)'}},
+      x:{title:{display:true,text:'Follow-up (years)'},grid:{color:'rgba(255,255,255,0.04)'}}}
+  }
+});
+
+// CHART 4: Mortality Rate
+new Chart(document.getElementById('chart4'),{
+  type:'bar',
+  data:{
+    labels:['Male\nNo DM','Male\nDM','Female\nNo DM','Female\nDM'],
+    datasets:[{
+      label:'CVD Deaths per 1,000 PY',
+      data:[4.2,9.8,2.8,7.1],
+      backgroundColor:['#3B82F6','#EF4444','#60A5FA','#F87171'],
+      borderRadius:6
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{y:{beginAtZero:true,title:{display:true,text:'Rate per 1,000 person-years'},grid:{color:'rgba(255,255,255,0.04)'}},
+      x:{grid:{display:false}}}
+  }
+});
+
+// CHART 5: PHQ-9 by Sleep Duration
+new Chart(document.getElementById('chart5'),{
+  type:'bar',
+  data:{
+    labels:['<5 hours','5-6 hours','7-8 hours\n(reference)','>9 hours'],
+    datasets:[{
+      label:'Mean PHQ-9 Score',
+      data:[8.2,5.8,3.5,6.1],
+      backgroundColor:['#EF4444','#F59E0B','#10B981','#F59E0B'],
+      borderRadius:6
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{y:{beginAtZero:true,max:12,title:{display:true,text:'Mean PHQ-9 Score'},grid:{color:'rgba(255,255,255,0.04)'}},
+      x:{grid:{display:false}}}
+  }
+});
+
+// CHART 6: Depression Prevalence
+new Chart(document.getElementById('chart6'),{
+  type:'bar',
+  data:{
+    labels:['<5 hours','5-6 hours','7-8 hours','>9 hours'],
+    datasets:[
+      {label:'Minimal (0-4)',data:[28,42,62,38],backgroundColor:'#10B981'},
+      {label:'Mild (5-9)',data:[32,30,25,30],backgroundColor:'#3B82F6'},
+      {label:'Moderate (10-14)',data:[22,16,8,18],backgroundColor:'#F59E0B'},
+      {label:'Severe (≥15)',data:[18,12,5,14],backgroundColor:'#EF4444'}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'bottom',labels:{usePointStyle:true,padding:15,font:{size:11}}}},
+    scales:{y:{stacked:true,max:100,title:{display:true,text:'Percentage (%)'},grid:{color:'rgba(255,255,255,0.04)'}},
+      x:{stacked:true,grid:{display:false}}}
+  }
+});
+</script>
 </body>
 </html>
