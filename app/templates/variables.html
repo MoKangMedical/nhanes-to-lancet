@@ -66,7 +66,7 @@ searchInput.addEventListener('input', () => {
             const data = await resp.json();
             
             resultsList.innerHTML = data.map(v => 
-                '<a href="#" class="list-group-item list-group-item-action" onclick="showVarDetail(\'' + v.code + '\'); return false;">' +
+                '<a href="javascript:void(0)" class="list-group-item list-group-item-action" onclick="showVarDetail(\'' + v.code + '\'); return false;">' +
                 '<div class="d-flex justify-content-between">' +
                 '<div><strong>' + v.code + '</strong> - ' + v.description + '</div>' +
                 '<span class="badge bg-secondary">' + v.category + '</span>' +
