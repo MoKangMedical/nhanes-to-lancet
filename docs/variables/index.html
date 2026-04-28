@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variables — NHANES to Lancet</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/nhanes-to-lancet/static/css/main.css">
+    <style>
+        .page-header { background: linear-gradient(135deg, #0F172A, #1E293B); color: white; padding: 8rem 0 3rem; margin-bottom: 2rem; }
+        .page-header h1 { font-weight: 900; letter-spacing: -0.02em; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand" href="/nhanes-to-lancet/index.html">
+                <span class="brand-icon"><i class="fas fa-chart-line"></i></span>
+                <span class="brand-text">NHANES<span class="text-danger">→</span>Lancet</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/nhanes-to-lancet/index.html">Home</a></li>
+<li class="nav-item"><a class="nav-link" href="/nhanes-to-lancet/demo/index.html">Live Demo</a></li>
+<li class="nav-item"><a class="nav-link" class="active" href="/nhanes-to-lancet/variables/index.html">Variables</a></li>
+<li class="nav-item"><a class="nav-link" href="/nhanes-to-lancet/guide/index.html">Guide</a></li>
+<li class="nav-item"><a class="nav-link" href="/nhanes-to-lancet/api/index.html">API</a></li>
+<li class="nav-item"><a class="nav-link" href="/nhanes-to-lancet/blog/index.html">Blog</a></li>
+
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-danger btn-sm px-3" href="https://github.com/MoKangMedical/nhanes-to-lancet">
+                            <i class="fab fa-github me-1"></i>GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main style="padding-top: 70px;">
+        
+<section class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-database me-2"></i>NHANES Variable Browser</h1>
+        <p class="text-white-50">Search 2000+ variables from the National Health and Nutrition Examination Survey</p>
+    </div>
+</section>
+<section class="container py-4">
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="input-group input-group-lg">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" class="form-control" id="varSearch" placeholder="Search variables (e.g., BMI, blood pressure, glucose, depression, cholesterol)...">
+            </div>
+        </div>
+    </div>
+    
+    <div id="searchResults" class="mb-4" style="display:none">
+        <h5 class="fw-bold mb-3">Search Results</h5>
+        <div id="resultsList"></div>
+    </div>
+    
+    <h5 class="fw-bold mb-3">Common Variables</h5>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr><th>Code</th><th>Description</th><th>Category</th><th>Type</th><th>File</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>RIDAGEYR</code></td><td>Age in years at screening</td><td>Demographics</td><td>continuous</td><td>DEMO</td></tr>
+                <tr><td><code>RIAGENDR</code></td><td>Gender</td><td>Demographics</td><td>categorical</td><td>DEMO</td></tr>
+                <tr><td><code>RIDRETH1</code></td><td>Race/Hispanic origin</td><td>Demographics</td><td>categorical</td><td>DEMO</td></tr>
+                <tr><td><code>DMDEDUC2</code></td><td>Education level (adults 20+)</td><td>Demographics</td><td>categorical</td><td>DEMO</td></tr>
+                <tr><td><code>INDFMPIR</code></td><td>Ratio of family income to poverty</td><td>Demographics</td><td>continuous</td><td>DEMO</td></tr>
+                <tr><td><code>BMXBMI</code></td><td>Body Mass Index (kg/m²)</td><td>Body Measures</td><td>continuous</td><td>BMX</td></tr>
+                <tr><td><code>BMXWT</code></td><td>Weight (kg)</td><td>Body Measures</td><td>continuous</td><td>BMX</td></tr>
+                <tr><td><code>BMXHT</code></td><td>Standing Height (cm)</td><td>Body Measures</td><td>continuous</td><td>BMX</td></tr>
+                <tr><td><code>BMXWAIST</code></td><td>Waist Circumference (cm)</td><td>Body Measures</td><td>continuous</td><td>BMX</td></tr>
+                <tr><td><code>BPXSY1</code></td><td>Systolic BP - 1st reading (mmHg)</td><td>Blood Pressure</td><td>continuous</td><td>BPX</td></tr>
+                <tr><td><code>BPXDI1</code></td><td>Diastolic BP - 1st reading (mmHg)</td><td>Blood Pressure</td><td>continuous</td><td>BPX</td></tr>
+                <tr><td><code>BPQ020</code></td><td>Ever told had high blood pressure</td><td>BP Questionnaire</td><td>categorical</td><td>BPQ</td></tr>
+                <tr><td><code>LBXTC</code></td><td>Total cholesterol (mg/dL)</td><td>Cholesterol</td><td>continuous</td><td>TCHOL</td></tr>
+                <tr><td><code>LBXHDD</code></td><td>Direct HDL-cholesterol (mg/dL)</td><td>HDL</td><td>continuous</td><td>HDL</td></tr>
+                <tr><td><code>LBXTR</code></td><td>Triglycerides (mg/dL)</td><td>Triglycerides</td><td>continuous</td><td>TRIGLY</td></tr>
+                <tr><td><code>LBXGLU</code></td><td>Fasting glucose (mg/dL)</td><td>Glucose</td><td>continuous</td><td>GLU</td></tr>
+                <tr><td><code>LBXGH</code></td><td>Glycohemoglobin (%)</td><td>HbA1c</td><td>continuous</td><td>HBA1C</td></tr>
+                <tr><td><code>DIQ010</code></td><td>Doctor told you have diabetes</td><td>Diabetes</td><td>categorical</td><td>DIQ</td></tr>
+                <tr><td><code>SMQ020</code></td><td>Smoked at least 100 cigarettes in life</td><td>Smoking</td><td>categorical</td><td>SMQ</td></tr>
+                <tr><td><code>SMQ040</code></td><td>Do you now smoke cigarettes</td><td>Smoking</td><td>categorical</td><td>SMQ</td></tr>
+                <tr><td><code>ALQ120Q</code></td><td>How often drink per year</td><td>Alcohol</td><td>continuous</td><td>ALQ</td></tr>
+                <tr><td><code>PAQ605</code></td><td>Vigorous work activity</td><td>Physical Activity</td><td>categorical</td><td>PAQ</td></tr>
+                <tr><td><code>SLQ060</code></td><td>Hours of sleep on weekdays</td><td>Sleep</td><td>continuous</td><td>SLQ</td></tr>
+                <tr><td><code>DPQ010</code></td><td>Little interest in doing things (PHQ-9)</td><td>Depression</td><td>ordinal</td><td>DPQ</td></tr>
+                <tr><td><code>MCQ160D</code></td><td>Ever told had coronary heart disease</td><td>Medical Conditions</td><td>categorical</td><td>MCQ</td></tr>
+                <tr><td><code>MCQ160E</code></td><td>Ever told had heart attack</td><td>Medical Conditions</td><td>categorical</td><td>MCQ</td></tr>
+                <tr><td><code>MCQ160F</code></td><td>Ever told had stroke</td><td>Medical Conditions</td><td>categorical</td><td>MCQ</td></tr>
+                <tr><td><code>MORTSTAT</code></td><td>Final mortality status</td><td>Mortality</td><td>categorical</td><td>MORT</td></tr>
+                <tr><td><code>PERMTH_EXM</code></td><td>Months of follow-up from MEC exam</td><td>Mortality</td><td>continuous</td><td>MORT</td></tr>
+                <tr><td><code>WTMEC2YR</code></td><td>Full sample 2 year MEC exam weight</td><td>Demographics</td><td>weight</td><td>DEMO</td></tr>
+                <tr><td><code>SDMVPSU</code></td><td>Masked variance pseudo-PSU</td><td>Demographics</td><td>survey</td><td>DEMO</td></tr>
+                <tr><td><code>SDMVSTRA</code></td><td>Masked variance pseudo-stratum</td><td>Demographics</td><td>survey</td><td>DEMO</td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        This is a subset of 2000+ available variables. The full variable database is available in the Python application.
+        <a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="alert-link">Get the code →</a>
+    </div>
+</section>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 NHANES to Lancet. Open-source epidemiological research platform.</p>
+                <div class="footer-social">
+                    <a href="https://github.com/MoKangMedical/nhanes-to-lancet" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/nhanes-to-lancet/static/js/main.js"></script>
+</body>
+</html>

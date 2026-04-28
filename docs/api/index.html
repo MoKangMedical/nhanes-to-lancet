@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation — NHANES to Lancet</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/nhanes-to-lancet/static/css/main.css">
+    <style>
+        .page-header { background: linear-gradient(135deg, #0F172A, #1E293B); color: white; padding: 8rem 0 3rem; margin-bottom: 2rem; }
+        .page-header h1 { font-weight: 900; letter-spacing: -0.02em; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand" href="/nhanes-to-lancet/index.html">
+                <span class="brand-icon"><i class="fas fa-chart-line"></i></span>
+                <span class="brand-text">NHANES<span class="text-danger">→</span>Lancet</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/nhanes-to-lancet/index.html">Home</a></li>
+<li class="nav-item"><a class="nav-link" href="/nhanes-to-lancet/demo/index.html">Live Demo</a></li>
+<li class="nav-item"><a class="nav-link" href="/nhanes-to-lancet/variables/index.html">Variables</a></li>
+<li class="nav-item"><a class="nav-link" href="/nhanes-to-lancet/guide/index.html">Guide</a></li>
+<li class="nav-item"><a class="nav-link" class="active" href="/nhanes-to-lancet/api/index.html">API</a></li>
+<li class="nav-item"><a class="nav-link" href="/nhanes-to-lancet/blog/index.html">Blog</a></li>
+
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-danger btn-sm px-3" href="https://github.com/MoKangMedical/nhanes-to-lancet">
+                            <i class="fab fa-github me-1"></i>GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main style="padding-top: 70px;">
+        
+<section class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-code me-2"></i>API Documentation</h1>
+        <p class="text-white-50">RESTful API for programmatic NHANES analysis</p>
+    </div>
+</section>
+<section class="container py-4">
+    <div class="alert alert-info">
+        <i class="fas fa-server me-2"></i>
+        <strong>Base URL:</strong> <code>http://localhost:8501</code> (local) | 
+        <strong>Version:</strong> 2.0.0
+    </div>
+    
+    <h4 class="fw-bold mt-4 mb-3">Endpoints</h4>
+    
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between bg-white">
+            <span><span class="badge bg-success me-2">POST</span><code>/api/projects</code></span>
+            <span class="text-muted small">Create analysis project</span>
+        </div>
+        <div class="card-body">
+            <p class="small text-muted">Parameters: title, description, exposure, outcome, cycles, analysis_type, proposal_file</p>
+            <pre class="bg-dark text-light p-2 rounded small mb-0"><code>curl -X POST http://localhost:8501/api/projects \
+  -F "title=BMI and Hypertension" \
+  -F "exposure=BMXBMI" -F "outcome=BPQ020"</code></pre>
+        </div>
+    </div>
+    
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between bg-white">
+            <span><span class="badge bg-success me-2">POST</span><code>/api/projects/{id}/run</code></span>
+            <span class="text-muted small">Run analysis pipeline</span>
+        </div>
+    </div>
+    
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between bg-white">
+            <span><span class="badge bg-primary me-2">GET</span><code>/api/projects/{id}/status</code></span>
+            <span class="text-muted small">Check analysis status</span>
+        </div>
+    </div>
+    
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between bg-white">
+            <span><span class="badge bg-primary me-2">GET</span><code>/api/projects/{id}/results</code></span>
+            <span class="text-muted small">Get analysis results</span>
+        </div>
+    </div>
+    
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between bg-white">
+            <span><span class="badge bg-primary me-2">GET</span><code>/api/variables/search?q={query}</code></span>
+            <span class="text-muted small">Search NHANES variables</span>
+        </div>
+    </div>
+    
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between bg-white">
+            <span><span class="badge bg-primary me-2">GET</span><code>/api/variables/phenotype/{name}</code></span>
+            <span class="text-muted small">Get phenotype variables</span>
+        </div>
+    </div>
+    
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between bg-white">
+            <span><span class="badge bg-primary me-2">GET</span><code>/api/pubmed/search?q={query}</code></span>
+            <span class="text-muted small">Search PubMed literature</span>
+        </div>
+    </div>
+    
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between bg-white">
+            <span><span class="badge bg-success me-2">POST</span><code>/api/demo/{type}</code></span>
+            <span class="text-muted small">Run demo analysis</span>
+        </div>
+        <div class="card-body">
+            <p class="small text-muted">Demo types: bmi_hypertension, diabetes_cvd, depression_sleep</p>
+        </div>
+    </div>
+</section>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 NHANES to Lancet. Open-source epidemiological research platform.</p>
+                <div class="footer-social">
+                    <a href="https://github.com/MoKangMedical/nhanes-to-lancet" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/nhanes-to-lancet/static/js/main.js"></script>
+</body>
+</html>
