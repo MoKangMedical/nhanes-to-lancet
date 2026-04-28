@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}User Guide - NHANES to Lancet{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card sticky-top" style="top:1rem">
+                <div class="card-body p-3">
+                    <h6 class="fw-bold text-muted text-uppercase" style="font-size:0.7rem">Guide</h6>
+                    <nav class="nav flex-column">
+                        <a class="nav-link py-1" href="#getting-started">Getting Started</a>
+                        <a class="nav-link py-1" href="#variables">Understanding Variables</a>
+                        <a class="nav-link py-1" href="#weights">Survey Weights</a>
+                        <a class="nav-link py-1" href="#analysis">Analysis Methods</a>
+                        <a class="nav-link py-1" href="#interpretation">Interpreting Results</a>
+                        <a class="nav-link py-1" href="#faq">FAQ</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <h2 class="fw-bold mb-4">User Guide</h2>
+            
+            <div id="getting-started" class="mb-5">
+                <h4 class="fw-bold">Getting Started</h4>
+                <p>NHANES to Lancet automates the process of analyzing NHANES data for epidemiological research. Here's how to get started:</p>
+                
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="fw-bold">Step 1: Choose Your Research Topic</h6>
+                        <p>Select a phenotype from the quick-select buttons (e.g., Obesity, Diabetes, Cardiovascular) to auto-populate recommended variables, or manually enter NHANES variable codes.</p>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="fw-bold">Step 2: Configure Analysis</h6>
+                        <p>Select survey cycles (2017-2018 is recommended for most analyses), analysis type, and upload an optional research proposal document.</p>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="fw-bold">Step 3: Review Results</h6>
+                        <p>After the analysis completes, review tables, figures, and the generated manuscript. Download the complete results package as a ZIP file.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="variables" class="mb-5">
+                <h4 class="fw-bold">Understanding NHANES Variables</h4>
+                <p>NHANES uses standardized variable names. Common ones include:</p>
+                
+                <table class="table table-sm">
+                    <thead><tr><th>Code</th><th>Description</th><th>File</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>RIDAGEYR</code></td><td>Age in years</td><td>DEMO</td></tr>
+                        <tr><td><code>RIAGENDR</code></td><td>Gender (1=Male, 2=Female)</td><td>DEMO</td></tr>
+                        <tr><td><code>BMXBMI</code></td><td>Body Mass Index (kg/m²)</td><td>BMX</td></tr>
+                        <tr><td><code>BPXSY1</code></td><td>Systolic BP, 1st reading</td><td>BPX</td></tr>
+                        <tr><td><code>LBXTC</code></td><td>Total cholesterol (mg/dL)</td><td>TCHOL</td></tr>
+                        <tr><td><code>LBXGLU</code></td><td>Fasting glucose (mg/dL)</td><td>GLU</td></tr>
+                        <tr><td><code>DIQ010</code></td><td>Doctor told you have diabetes</td><td>DIQ</td></tr>
+                        <tr><td><code>SMQ020</code></td><td>Smoked 100+ cigarettes in life</td><td>SMQ</td></tr>
+                        <tr><td><code>WTMEC2YR</code></td><td>MEC exam weight</td><td>DEMO</td></tr>
+                        <tr><td><code>SDMVPSU</code></td><td>Pseudo-PSU for survey design</td><td>DEMO</td></tr>
+                        <tr><td><code>SDMVSTRA</code></td><td>Pseudo-stratum for survey design</td><td>DEMO</td></tr>
+                    </tbody>
+                </table>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Use the <a href="/variables">Variables Browser</a> to search 2000+ NHANES variables by keyword.
+                </div>
+            </div>
+            
+            <div id="weights" class="mb-5">
+                <h4 class="fw-bold">Survey Weights Explained</h4>
+                <p>NHANES uses a complex, multistage probability sampling design. To produce valid population-level estimates, analyses MUST incorporate:</p>
+                
+                <ul>
+                    <li><strong>Survey weights</strong> (WTMEC2YR for exam data, WTINT2YR for interview data) — account for differential selection probabilities and non-response</li>
+                    <li><strong>PSU</strong> (SDMVPSU) — primary sampling units</li>
+                    <li><strong>Strata</strong> (SDMVSTRA) — sampling strata</li>
+                </ul>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Important:</strong> When combining multiple NHANES cycles, divide the weight by the number of cycles. For example, combining 2015-2016 and 2017-2018: WTMEC2YR_ADJ = WTMEC2YR / 2.
+                </div>
+            </div>
+            
+            <div id="analysis" class="mb-5">
+                <h4 class="fw-bold">Supported Analysis Methods</h4>
+                
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="fw-bold">Cross-Sectional Analysis</h6>
+                        <p>Survey-weighted logistic regression (for binary outcomes) or linear regression (for continuous outcomes). Produces adjusted odds ratios or beta coefficients with 95% CI.</p>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="fw-bold">Kaplan-Meier Survival Analysis</h6>
+                        <p>Estimates survival functions over time. Generates survival curves with log-rank test p-values and risk tables.</p>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="fw-bold">Cox Proportional Hazards</h6>
+                        <p>Evaluates the effect of multiple variables on time-to-event outcomes. Produces hazard ratios (HR) with 95% CI. Tests the proportional hazards assumption.</p>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="fw-bold">Fine-Gray Competing Risk</h6>
+                        <p>When competing events exist (e.g., non-CVD death competing with CVD death), the Fine-Gray model produces sub-hazard ratios.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="interpretation" class="mb-5">
+                <h4 class="fw-bold">Interpreting Results</h4>
+                
+                <h6>Odds Ratio (OR)</h6>
+                <p>OR > 1: Higher odds of outcome. OR < 1: Lower odds. OR = 1: No association. Example: OR = 1.42 means 42% higher odds per unit increase in exposure.</p>
+                
+                <h6>Hazard Ratio (HR)</h6>
+                <p>HR > 1: Higher hazard (risk) of event. HR = 1.5 means 50% higher instantaneous risk.</p>
+                
+                <h6>P-value</h6>
+                <p>P < 0.05 is considered statistically significant. Report exact p-values rather than just "significant" or "not significant."</p>
+                
+                <h6>Confidence Interval (CI)</h6>
+                <p>95% CI that does not include 1.0 (for ratios) is statistically significant at alpha = 0.05.</p>
+            </div>
+            
+            <div id="faq" class="mb-5">
+                <h4 class="fw-bold">Frequently Asked Questions</h4>
+                
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#faq1">Can I use these results for my actual research paper?</button></h2>
+                        <div id="faq1" class="accordion-collapse collapse show"><div class="accordion-body">The platform provides a solid starting point with correct statistical methods. However, always verify results against your own analysis, review the generated paper carefully, and add your domain expertise before submission.</div></div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq2">Which NHANES cycles should I use?</button></h2>
+                        <div id="faq2" class="accordion-collapse collapse"><div class="accordion-body">Use the most recent available cycle(s) for your variables of interest. 2017-2018 is the most recent complete cycle. Combining cycles increases sample size but requires weight adjustment.</div></div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq3">How do I handle missing data?</button></h2>
+                        <div id="faq3" class="accordion-collapse collapse"><div class="accordion-body">The platform uses complete case analysis by default. For publication, consider multiple imputation as a sensitivity analysis. NHANES provides imputed datasets for some variables.</div></div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq4">Do I need IRB approval to use NHANES data?</button></h2>
+                        <div id="faq4" class="accordion-collapse collapse"><div class="accordion-body">NHANES data is publicly available and de-identified. Most institutions consider NHANES analyses exempt from IRB review, but check your institution's policy.</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

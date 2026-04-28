@@ -118,6 +118,20 @@ async def pricing_page(request: Request):
 
 
 @app.get("/literature", response_class=HTMLResponse)
+@app.get("/guide", response_class=HTMLResponse)
+@app.get("/terms", response_class=HTMLResponse)
+async def terms_page(request: Request):
+    """Terms of service page."""
+    return templates.TemplateResponse("tos.html", {"request": request})
+
+
+@app.get("/guide", response_class=HTMLResponse)
+async def guide_page(request: Request):
+    """User guide page."""
+    return templates.TemplateResponse("guide.html", {"request": request})
+
+
+@app.get("/literature", response_class=HTMLResponse)
 async def literature_page(request: Request):
     """PubMed literature search page."""
     return templates.TemplateResponse("literature.html", {"request": request})
