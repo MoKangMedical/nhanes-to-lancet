@@ -1,439 +1,168 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NHANES to Lancet — AI Epidemiological Research Platform</title>
-    <meta name="description" content="Transform NHANES survey data into Lancet-quality publications. AI-powered statistical analysis with survey weights, publication tables, and forest plots.">
-    <meta name="keywords" content="NHANES, Lancet, epidemiology, research, biostatistics, survey data, public health, AI analysis">
-    <meta property="og:title" content="NHANES to Lancet — AI Epidemiological Research Platform">
-    <meta property="og:description" content="From NHANES data to Lancet publication in 5 minutes.">
-    <meta property="og:type" content="website">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="static/css/main.css">
+    <title>NHANES to Lancet - MoKangMedical</title>
+    <meta name="description" content="NHANES数据到Lancet论文的转化工具">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #6366f1;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --border: #1e293b;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, var(--darker) 0%, #1e1b4b 50%, var(--darker) 100%);
+        }
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #fff 0%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+        .btn {
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .btn-secondary {
+            background: transparent;
+            color: var(--light);
+            border: 2px solid var(--border);
+        }
+        .features {
+            padding: 100px 0;
+            background: var(--dark);
+        }
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+        .feature-card {
+            background: var(--darker);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+        }
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+        .feature-card p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        .cta {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #6366f1 0%, #7c3aed 100%);
+            text-align: center;
+        }
+        .cta h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        footer {
+            padding: 40px 0;
+            background: var(--darker);
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--gray);
+            font-size: 14px;
+        }
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+    </style>
 </head>
-<body style="padding-top:56px!important">
-<nav id="opc-nav" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(10,10,30,0.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(99,102,241,0.2);padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
-  <a href="https://mokangmedical.github.io/opc-homepage/" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;font-weight:700;font-size:15px">
-    <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="url(#ng1)" stroke-width="2.5"/><path d="M10 16h12M16 10v12" stroke="url(#ng1)" stroke-width="2.5" stroke-linecap="round"/><defs><linearGradient id="ng1" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#818cf8"/><stop offset="1" stop-color="#c084fc"/></linearGradient></defs></svg>
-    <span style="background:linear-gradient(135deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent">MoKangMedical</span>
-  </a>
-  <div style="display:flex;gap:6px;align-items:center">
-    <a href="https://mokangmedical.github.io/opc-homepage/" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px">生态首页</a>
-    <a href="https://github.com/MoKangMedical" target="_blank" style="color:rgba(255,255,255,0.7);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px">GitHub</a>
-    <a href="https://mokangmedical.github.io/opc-alliance/" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:6px 16px;border-radius:8px;font-weight:600;font-size:13px;text-decoration:none">OPC Hub</a>
-  </div>
-</nav>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+<body>
+    <section class="hero">
         <div class="container">
-            <a class="navbar-brand" href="index.html">
-                <span class="brand-icon"><i class="fas fa-chart-line"></i></span>
-                <span class="brand-text">NHANES<span class="text-danger">→</span>Lancet</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="demo/index.html">Live Demo</a></li>
-                    <li class="nav-item"><a class="nav-link" href="variables/index.html">Variables</a></li>
-                    <li class="nav-item"><a class="nav-link" href="guide/index.html">Guide</a></li>
-                    <li class="nav-item"><a class="nav-link" href="api/index.html">API</a></li>
-                    <li class="nav-item"><a class="nav-link" href="blog/index.html">Blog</a></li>
-                    <li class="nav-item ms-lg-3">
-                        <a class="btn btn-danger btn-sm px-3" href="https://github.com/MoKangMedical/nhanes-to-lancet">
-                            <i class="fab fa-github me-1"></i>GitHub
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero -->
-    <section class="hero-section">
-        <div class="hero-bg"></div>
-        <div class="container position-relative">
-            <div class="row align-items-center min-vh-100 pt-5">
-                <div class="col-lg-6">
-                    <div class="hero-badge">
-                        <i class="fas fa-bolt me-1"></i> NHANES Research Platform v2.0
-                    </div>
-                    <h1 class="hero-title">
-                        Turn <span class="text-gradient">NHANES Data</span><br>
-                        into Lancet Papers
-                    </h1>
-                    <p class="hero-subtitle">
-                        AI-powered epidemiological research platform. Upload your research question, 
-                        get a publication-ready manuscript with survey-weighted analysis, tables, 
-                        figures, and formatted references — all meeting Lancet standards.
-                    </p>
-                    <div class="hero-actions">
-                        <a href="demo/index.html" class="btn btn-hero-primary">
-                            <i class="fas fa-play me-2"></i>Try Live Demo
-                        </a>
-                        <a href="guide/index.html" class="btn btn-hero-outline">
-                            <i class="fas fa-book me-2"></i>Documentation
-                        </a>
-                    </div>
-                    <div class="hero-trust">
-                        <span><i class="fas fa-check-circle"></i> No signup required</span>
-                        <span><i class="fas fa-check-circle"></i> CDC official data</span>
-                        <span><i class="fas fa-check-circle"></i> Survey-weighted</span>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="hero-visual">
-                        <div class="terminal-window">
-                            <div class="terminal-header">
-                                <span class="terminal-dot red"></span>
-                                <span class="terminal-dot yellow"></span>
-                                <span class="terminal-dot green"></span>
-                                <span class="terminal-title">NHANES Analysis</span>
-                            </div>
-                            <div class="terminal-body">
-                                <div class="terminal-line"><span class="t-prompt">$</span> <span class="t-cmd">nhanes-lancet analyze</span></div>
-                                <div class="terminal-line"><span class="t-info">↓</span> Downloading NHANES 2017-2018...</div>
-                                <div class="terminal-line"><span class="t-info">✓</span> 4,500 participants loaded</div>
-                                <div class="terminal-line"><span class="t-info">✓</span> Survey weights applied (WTMEC2YR)</div>
-                                <div class="terminal-line"><span class="t-info">✓</span> Logistic regression complete</div>
-                                <div class="terminal-line"><span class="t-info">✓</span> Table 1 generated (Lancet format)</div>
-                                <div class="terminal-line"><span class="t-info">✓</span> Forest plot saved (300 DPI)</div>
-                                <div class="terminal-line"><span class="t-info">✓</span> Paper written (14,000 chars)</div>
-                                <div class="terminal-line"><span class="t-success">✓</span> <span class="t-bold">Analysis complete in 47 seconds</span></div>
-                                <div class="terminal-line mt-2"><span class="t-prompt">$</span> <span class="t-cursor">█</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <h1>NHANES to Lancet</h1>
+            <p>NHANES数据到Lancet论文的转化工具</p>
+            <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+                <a href="#features" class="btn btn-primary">了解功能</a>
+                <a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn btn-secondary">GitHub</a>
             </div>
         </div>
     </section>
-
-    <!-- Metrics Strip -->
-    <section class="metrics-strip">
+    <section class="features" id="features">
         <div class="container">
-            <div class="row g-4">
-                <div class="col-6 col-md-3">
-                    <div class="metric-item">
-                        <div class="metric-value">150K+</div>
-                        <div class="metric-label">NHANES Participants</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="metric-item">
-                        <div class="metric-value">2,000+</div>
-                        <div class="metric-label">Variables Available</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="metric-item">
-                        <div class="metric-value">10</div>
-                        <div class="metric-label">Survey Cycles</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="metric-item">
-                        <div class="metric-value">47s</div>
-                        <div class="metric-label">Analysis Time</div>
-                    </div>
-                </div>
+            <div class="section-title">
+                <h2>核心功能</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card"><h3>数据下载</h3><p>专业的数据下载能力，助力医学研究</p></div><div class="feature-card"><h3>变量选择</h3><p>专业的变量选择能力，助力医学研究</p></div><div class="feature-card"><h3>统计分析</h3><p>专业的统计分析能力，助力医学研究</p></div><div class="feature-card"><h3>图表制作</h3><p>专业的图表制作能力，助力医学研究</p></div><div class="feature-card"><h3>论文模板</h3><p>专业的论文模板能力，助力医学研究</p></div><div class="feature-card"><h3>投稿助手</h3><p>专业的投稿助手能力，助力医学研究</p></div>
             </div>
         </div>
     </section>
-
-    <!-- How It Works -->
-    <section class="section-padding" id="how-it-works">
+    <section class="cta">
         <div class="container">
-            <div class="section-header">
-                <span class="section-tag">Workflow</span>
-                <h2>Three Steps to Publication</h2>
-                <p>From research question to Lancet-ready manuscript</p>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="step-card">
-                        <div class="step-number">01</div>
-                        <div class="step-icon"><i class="fas fa-clipboard-list"></i></div>
-                        <h4>Define Your Study</h4>
-                        <p>Select a research phenotype or enter NHANES variable codes. Upload a Word research proposal for AI-powered variable mapping.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="step-card">
-                        <div class="step-number">02</div>
-                        <div class="step-icon"><i class="fas fa-cogs"></i></div>
-                        <h4>Analyze Data</h4>
-                        <p>Platform downloads data from CDC, applies survey weights, runs regression models, and generates publication-quality figures automatically.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="step-card">
-                        <div class="step-number">03</div>
-                        <div class="step-icon"><i class="fas fa-file-alt"></i></div>
-                        <h4>Download Paper</h4>
-                        <p>Get a complete manuscript with structured abstract, all sections, Lancet-format tables, forest plots, and Vancouver-format references.</p>
-                    </div>
-                </div>
-            </div>
+            <h2>开始使用 NHANES to Lancet</h2>
+            <p>加入MoKangMedical生态，探索AI医疗的无限可能</p>
+            <a href="https://github.com/MoKangMedical/nhanes-to-lancet" class="btn" style="background:white;color:var(--primary)">立即开始</a>
         </div>
     </section>
-
-    <!-- Features Grid -->
-    <section class="section-padding bg-light" id="features">
+    <footer>
         <div class="container">
-            <div class="section-header">
-                <span class="section-tag">Capabilities</span>
-                <h2>Everything You Need</h2>
-                <p>Publication-grade epidemiological analysis</p>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-4">
-                    <div class="feature-card">
-                        <div class="feature-icon"><i class="fas fa-database"></i></div>
-                        <h5>NHANES Data Engine</h5>
-                        <p>Automated CDC XPT file download, multi-cycle merging, parquet caching. Supports all cycles from 1999-2020.</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="feature-card">
-                        <div class="feature-icon"><i class="fas fa-balance-scale"></i></div>
-                        <h5>Survey-Weighted Analysis</h5>
-                        <p>Proper complex survey design with PSU, strata, and weights. Follows NCHS analytic guidelines.</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="feature-card">
-                        <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
-                        <h5>Publication Figures</h5>
-                        <p>Forest plots, survival curves, histograms, correlation heatmaps — all 300 DPI, Lancet color palette.</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="feature-card">
-                        <div class="feature-icon"><i class="fas fa-file-medical-alt"></i></div>
-                        <h5>Lancet Tables</h5>
-                        <p>Table 1 baseline characteristics, regression results tables, subgroup analyses — all formatted per journal standards.</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="feature-card">
-                        <div class="feature-icon"><i class="fas fa-robot"></i></div>
-                        <h5>AI Paper Writing</h5>
-                        <p>Structured abstract, Introduction, Methods, Results, Discussion — generated from your analysis results.</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="feature-card">
-                        <div class="feature-icon"><i class="fas fa-book-open"></i></div>
-                        <h5>PubMed Integration</h5>
-                        <p>Real-time literature search for related NHANES studies. Auto-formatted Vancouver references.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Comparison -->
-    <section class="section-padding" id="comparison">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">Comparison</span>
-                <h2>Manual vs. Automated</h2>
-                <p>See how much time you save</p>
-            </div>
-            <div class="comparison-table-wrapper">
-                <table class="table comparison-table">
-                    <thead>
-                        <tr>
-                            <th>Task</th>
-                            <th class="text-center">Manual Workflow</th>
-                            <th class="text-center">NHANES→Lancet</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Data download & merge</td>
-                            <td class="text-center text-muted">2-4 hours</td>
-                            <td class="text-center fw-bold text-danger">30 seconds</td>
-                        </tr>
-                        <tr>
-                            <td>Survey weight setup</td>
-                            <td class="text-center text-muted">Manual coding</td>
-                            <td class="text-center fw-bold text-danger">Automatic</td>
-                        </tr>
-                        <tr>
-                            <td>Variable mapping</td>
-                            <td class="text-center text-muted">Hours of lookup</td>
-                            <td class="text-center fw-bold text-danger">AI-powered</td>
-                        </tr>
-                        <tr>
-                            <td>Statistical analysis</td>
-                            <td class="text-center text-muted">R/SAS scripting</td>
-                            <td class="text-center fw-bold text-danger">Pre-built</td>
-                        </tr>
-                        <tr>
-                            <td>Publication tables</td>
-                            <td class="text-center text-muted">Manual formatting</td>
-                            <td class="text-center fw-bold text-danger">Auto-generated</td>
-                        </tr>
-                        <tr>
-                            <td>Forest plots</td>
-                            <td class="text-center text-muted">ggplot2 coding</td>
-                            <td class="text-center fw-bold text-danger">One click</td>
-                        </tr>
-                        <tr>
-                            <td>Paper writing</td>
-                            <td class="text-center text-muted">Days to weeks</td>
-                            <td class="text-center fw-bold text-danger">2 minutes</td>
-                        </tr>
-                        <tr class="table-active">
-                            <td class="fw-bold">Time to first draft</td>
-                            <td class="text-center fw-bold">2-4 weeks</td>
-                            <td class="text-center fw-bold text-danger fs-5">5 minutes</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-
-    <!-- Research Topics -->
-    <section class="section-padding bg-light" id="topics">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">Research Areas</span>
-                <h2>Supported Topics</h2>
-                <p>Pre-configured variable sets for common analyses</p>
-            </div>
-            <div class="row g-3">
-                <div class="col-6 col-md-3"><div class="topic-card"><i class="fas fa-heartbeat"></i><span>Cardiovascular</span></div></div>
-                <div class="col-6 col-md-3"><div class="topic-card"><i class="fas fa-weight"></i><span>Obesity</span></div></div>
-                <div class="col-6 col-md-3"><div class="topic-card"><i class="fas fa-syringe"></i><span>Diabetes</span></div></div>
-                <div class="col-6 col-md-3"><div class="topic-card"><i class="fas fa-brain"></i><span>Depression</span></div></div>
-                <div class="col-6 col-md-3"><div class="topic-card"><i class="fas fa-lungs"></i><span>Hypertension</span></div></div>
-                <div class="col-6 col-md-3"><div class="topic-card"><i class="fas fa-smoking"></i><span>Smoking</span></div></div>
-                <div class="col-6 col-md-3"><div class="topic-card"><i class="fas fa-utensils"></i><span>Diet & Nutrition</span></div></div>
-                <div class="col-6 col-md-3"><div class="topic-card"><i class="fas fa-bed"></i><span>Sleep</span></div></div>
-                <div class="col-6 col-md-3"><div class="topic-card"><i class="fas fa-tint"></i><span>Cholesterol</span></div></div>
-                <div class="col-6 col-md-3"><div class="topic-card"><i class="fas fa-bone"></i><span>Kidney Disease</span></div></div>
-                <div class="col-6 col-md-3"><div class="topic-card"><i class="fas fa-allergies"></i><span>Hepatitis</span></div></div>
-                <div class="col-6 col-md-3"><div class="topic-card"><i class="fas fa-running"></i><span>Physical Activity</span></div></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Output Preview -->
-    <section class="section-padding" id="output">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">Output</span>
-                <h2>Publication-Ready Results</h2>
-                <p>Everything you need for a Lancet submission</p>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="output-preview">
-                        <div class="output-label"><i class="fas fa-table me-2"></i>Table 1: Baseline Characteristics</div>
-                        <table class="table table-sm output-table">
-                            <thead><tr><th>Characteristic</th><th>Overall</th><th>Normal</th><th>Obese</th><th>P</th></tr></thead>
-                            <tbody>
-                                <tr><td>Age, years</td><td>46.2 (0.3)</td><td>42.1 (0.4)</td><td>49.8 (0.5)</td><td>&lt;0.001</td></tr>
-                                <tr><td>Female, %</td><td>51.3</td><td>54.2</td><td>48.7</td><td>0.012</td></tr>
-                                <tr><td>SBP, mmHg</td><td>124.5 (0.4)</td><td>119.2 (0.5)</td><td>129.1 (0.6)</td><td>&lt;0.001</td></tr>
-                                <tr><td>Hypertension, %</td><td>32.4</td><td>18.7</td><td>45.2</td><td>&lt;0.001</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="output-preview">
-                        <div class="output-label"><i class="fas fa-chart-bar me-2"></i>Regression Results</div>
-                        <table class="table table-sm output-table">
-                            <thead><tr><th>Variable</th><th>OR (95% CI)</th><th>P-value</th></tr></thead>
-                            <tbody>
-                                <tr><td>BMI (per 5 kg/m²)</td><td>1.42 (1.35-1.49)</td><td>&lt;0.001</td></tr>
-                                <tr><td>Age (per 10 years)</td><td>1.38 (1.31-1.45)</td><td>&lt;0.001</td></tr>
-                                <tr><td>Male vs Female</td><td>1.21 (1.08-1.36)</td><td>0.001</td></tr>
-                                <tr><td>Non-Hispanic Black</td><td>1.65 (1.42-1.91)</td><td>&lt;0.001</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA -->
-    <section class="cta-section">
-        <div class="container text-center">
-            <h2>Ready to Accelerate Your Research?</h2>
-            <p class="mb-4">Join researchers using NHANES→Lancet for faster, publication-ready analyses.</p>
-            <a href="demo/index.html" class="btn btn-hero-primary btn-lg">
-                <i class="fas fa-rocket me-2"></i>Start Free Analysis
-            </a>
-            <p class="mt-3 text-white-50 small">No registration required. Results in minutes.</p>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="site-footer">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-4">
-                    <div class="footer-brand">
-                        <span class="brand-icon"><i class="fas fa-chart-line"></i></span>
-                        <span class="brand-text">NHANES→Lancet</span>
-                    </div>
-                    <p class="footer-desc">AI-powered epidemiological research platform transforming NHANES data into publication-ready manuscripts.</p>
-                </div>
-                <div class="col-lg-2 col-md-4">
-                    <h6 class="footer-title">Platform</h6>
-                    <ul class="footer-links">
-                        <li><a href="demo/index.html">Live Demo</a></li>
-                        <li><a href="variables/index.html">Variables</a></li>
-                        <li><a href="guide/index.html">Guide</a></li>
-                        <li><a href="api/index.html">API</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-4">
-                    <h6 class="footer-title">Research</h6>
-                    <ul class="footer-links">
-                        <li><a href="blog/index.html">Blog</a></li>
-                        <li><a href="guide/index.html#methods">Methods</a></li>
-                        <li><a href="guide/index.html#faq">FAQ</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-4">
-                    <h6 class="footer-title">Resources</h6>
-                    <ul class="footer-links">
-                        <li><a href="https://www.cdc.gov/nchs/nhanes/" target="_blank">CDC NHANES</a></li>
-                        <li><a href="https://www.thelancet.com/lancet/information-for-authors" target="_blank">Lancet Guidelines</a></li>
-                        <li><a href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank">PubMed</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2">
-                    <h6 class="footer-title">Legal</h6>
-                    <ul class="footer-links">
-                        <li><a href="terms/index.html">Terms of Service</a></li>
-                        <li><a href="terms/index.html#privacy">Privacy Policy</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 NHANES to Lancet. Open-source epidemiological research platform.</p>
-                <div class="footer-social">
-                    <a href="https://github.com/MoKangMedical/nhanes-to-lancet" target="_blank"><i class="fab fa-github"></i></a>
-                </div>
-            </div>
+            <p>&copy; 2026 MoKangMedical. All rights reserved. | <a href="https://mokangmedical.github.io/opc-homepage/">生态首页</a></p>
         </div>
     </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="static/js/main.js"></script>
 </body>
 </html>
