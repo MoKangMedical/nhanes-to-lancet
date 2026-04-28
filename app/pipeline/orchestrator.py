@@ -28,6 +28,7 @@ from ..analysis.engine import AnalysisEngine
 from ..ai.parser import ResearchProposalParser
 from ..ai.mapper import VariableMapper
 from ..ai.writer import PaperWriter
+from ..ai.pubmed import PubMedSearch
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +49,7 @@ class PipelineOrchestrator:
         self.mapper = VariableMapper()
         self.analysis = AnalysisEngine(project_id)
         self.writer = PaperWriter(api_key=api_key)
+        self.pubmed = PubMedSearch(api_key=api_key)
         
         # Pipeline state
         self.state = {
@@ -271,7 +273,24 @@ class PipelineOrchestrator:
             )
             results["figures"] = figures
             
-            # Step 7: Write paper
+            # Step 7: Search PubMed for related literature
+            self._update_state("literature", 80, "Searching PubMed for related studies")
+            if progress_callback:
+                progress_callback(80, "Searching PubMed for related studies")
+            
+            pubmed_articles = []
+            try:
+                pubmed_articles = self.pubmed.search_for_study(
+                    exposure_var or "exposure",
+                    outcome_var or "outcome",
+                    max_results=10
+                )
+                results["pubmed_articles"] = pubmed_articles
+                results["references"] = self.pubmed.generate_references_section(pubmed_articles)
+            except Exception as e:
+                logger.warning(f"PubMed search failed: {e}")
+            
+            # Step 8: Write paper
             self._update_state("writing", 85, "Writing academic paper")
             if progress_callback:
                 progress_callback(85, "Writing academic paper")

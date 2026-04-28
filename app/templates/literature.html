@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Literature Search - NHANES to Lancet{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="fw-bold mb-4"><i class="fas fa-book-open me-2 text-danger"></i>NHANES Literature Search</h2>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <form id="searchForm" class="row g-3">
+                <div class="col-md-8">
+                    <input type="text" class="form-control" id="searchQuery" 
+                           placeholder="e.g., BMI hypertension NHANES, diabetes cardiovascular mortality">
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="searchLimit">
+                        <option value="5">5 results</option>
+                        <option value="10" selected>10 results</option>
+                        <option value="20">20 results</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100"><i class="fas fa-search me-1"></i>Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="results"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('searchForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const q = document.getElementById('searchQuery').value.trim();
+    const limit = document.getElementById('searchLimit').value;
+    
+    if (!q) return;
+    
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = '<div class="text-center py-5"><i class="fas fa-spinner fa-spin fa-2x text-muted"></i><p class="mt-2 text-muted">Searching PubMed...</p></div>';
+    
+    try {
+        const resp = await fetch(`/api/pubmed/search?q=${encodeURIComponent(q)}&limit=${limit}`);
+        const data = await resp.json();
+        
+        if (data.articles.length === 0) {
+            resultsDiv.innerHTML = '<div class="alert alert-info">No results found. Try a different search query.</div>';
+            return;
+        }
+        
+        let html = `<p class="text-muted mb-3">Found ${data.count} articles</p>`;
+        
+        data.articles.forEach((article, i) => {
+            html += `
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="fw-bold mb-1">
+                                <a href="${article.url}" target="_blank" class="text-decoration-none">${article.title}</a>
+                            </h6>
+                            <p class="text-muted small mb-2">
+                                ${article.first_author} et al. 
+                                <strong>${article.journal_abbrev || article.journal}</strong> 
+                                ${article.year};${article.volume}${article.issue ? '(' + article.issue + ')' : ''}:${article.pages}
+                            </p>
+                        </div>
+                        <span class="badge bg-light text-dark">PMID: ${article.pmid}</span>
+                    </div>
+                    ${article.abstract ? `<p class="small mb-2" style="color:#475569">${article.abstract.substring(0, 300)}${article.abstract.length > 300 ? '...' : ''}</p>` : ''}
+                    ${article.mesh_terms.length > 0 ? `<div>${article.mesh_terms.map(t => `<span class="badge bg-light text-dark border me-1 mb-1" style="font-size:0.7rem">${t}</span>`).join('')}</div>` : ''}
+                    <div class="mt-2">
+                        <small class="text-muted">[${i+1}] Vancouver: ${article.first_author} et al. ${article.title}. ${article.journal_abbrev} ${article.year}.</small>
+                    </div>
+                </div>
+            </div>`;
+        });
+        
+        resultsDiv.innerHTML = html;
+        
+    } catch (e) {
+        resultsDiv.innerHTML = `<div class="alert alert-danger">Error: ${e.message}</div>`;
+    }
+});
+</script>
+{% endblock %}

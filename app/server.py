@@ -117,6 +117,12 @@ async def pricing_page(request: Request):
     return templates.TemplateResponse("pricing.html", {"request": request})
 
 
+@app.get("/literature", response_class=HTMLResponse)
+async def literature_page(request: Request):
+    """PubMed literature search page."""
+    return templates.TemplateResponse("literature.html", {"request": request})
+
+
 @app.get("/api-docs", response_class=HTMLResponse)
 async def api_docs_page(request: Request):
     """API documentation page."""
@@ -270,6 +276,19 @@ async def download_results(project_id: str):
         )
     
     raise HTTPException(status_code=404, detail="Results not available")
+
+
+@app.get("/api/pubmed/search")
+async def search_pubmed(q: str, limit: int = 10):
+    """Search PubMed for related NHANES studies."""
+    from app.ai.pubmed import PubMedSearch
+    pubmed = PubMedSearch()
+    articles = pubmed.search(q, max_results=limit)
+    return {
+        "query": q,
+        "count": len(articles),
+        "articles": articles,
+    }
 
 
 @app.get("/api/variables/search")
